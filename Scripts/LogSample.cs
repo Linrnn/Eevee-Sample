@@ -3,6 +3,9 @@ using System;
 using UnityEngine;
 using UDebug = UnityEngine.Debug;
 
+/// <summary>
+/// Log示例代码
+/// </summary>
 internal sealed class LogSample : MonoBehaviour
 {
     private sealed class Logger : IELogger
