@@ -113,21 +113,21 @@ internal sealed class EventSample : MonoBehaviour
     private readonly EventModule _emailEventModule = new();
     private readonly EventModule _loginEventModule = new();
 
-    [SerializeField] private HeroPanel heroPanel = new(); // 在监视面板查看结果
-    [SerializeField] private ItemPanel itemPanel = new(); // 在监视面板查看结果
+    [SerializeField] private HeroPanel _heroPanel = new(); // 在监视面板查看结果
+    [SerializeField] private ItemPanel _itemPanel = new(); // 在监视面板查看结果
 
     private void Awake()
     {
-        heroPanel.EmailEventModule = _emailEventModule;
-        heroPanel.LoginEventModule = _loginEventModule;
+        _heroPanel.EmailEventModule = _emailEventModule;
+        _heroPanel.LoginEventModule = _loginEventModule;
 
-        itemPanel.EmailEventModule = _emailEventModule;
-        itemPanel.LoginEventModule = _loginEventModule;
+        _itemPanel.EmailEventModule = _emailEventModule;
+        _itemPanel.LoginEventModule = _loginEventModule;
     }
     private void OnEnable()
     {
-        heroPanel.OnEnable();
-        itemPanel.OnEnable();
+        _heroPanel.OnEnable();
+        _itemPanel.OnEnable();
     }
     private void Update()
     {
@@ -148,8 +148,8 @@ internal sealed class EventSample : MonoBehaviour
     }
     private void OnDisable()
     {
-        heroPanel.OnDisable();
-        itemPanel.OnDisable();
+        _heroPanel.OnDisable();
+        _itemPanel.OnDisable();
     }
     private void OnDestroy()
     {
