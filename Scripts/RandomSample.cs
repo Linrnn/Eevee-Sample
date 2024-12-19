@@ -15,7 +15,7 @@ internal sealed class RandomSample : MonoBehaviour
     {
         System,
         Unity,
-        Fix,
+        Array,
     }
 
     [Serializable]
@@ -40,6 +40,7 @@ internal sealed class RandomSample : MonoBehaviour
     #endregion
 
     [SerializeField] private RandomType _randomType;
+    [SerializeField] private int _seed;
     [SerializeField] private byte _times;
 
     [Space] [SerializeField] private MinMax<sbyte> _sbyte;
@@ -55,14 +56,14 @@ internal sealed class RandomSample : MonoBehaviour
     {
         switch (_randomType)
         {
-            case RandomType.System: RandomProxy.Inject(new SystemRandom()); break;
-            case RandomType.Unity: RandomProxy.Inject(new UnityRandom(0)); break;
-            case RandomType.Fix: RandomProxy.Inject(new FixRandom()); break;
+            case RandomType.System: RandomProxy.Inject(new SystemRandom(_seed)); break;
+            case RandomType.Unity: RandomProxy.Inject(new UnityRandom(_seed)); break;
+            case RandomType.Array: RandomProxy.Inject(new ArrayRandom()); break;
         }
     }
     private void Update()
     {
-        Profiler.BeginSample("RandomSample.Update");
+        Profiler.BeginSample($"RandomSample.Update RandomType:{_randomType}");
 
         #region loop random
         _sbyte.Clean();

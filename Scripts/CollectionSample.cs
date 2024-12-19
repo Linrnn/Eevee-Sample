@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 /// <summary>
-/// 容器拓展示例代码
+/// Collection示例代码
 /// </summary>
 public sealed class CollectionSample : MonoBehaviour
 {
