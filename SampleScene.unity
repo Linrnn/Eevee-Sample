@@ -303,7 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02f89f9fbd8887d4f8f5de94ddf53ff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _randomType: 0
+  _randomType: 3
   _seed: 0
   _times: 20
   _sbyte:
