@@ -1,4 +1,4 @@
-using Eevee.Fixed;
+﻿using Eevee.Fixed;
 using Eevee.Log;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ internal sealed class RandomSample : MonoBehaviour
     {
         System,
         Unity,
-        Array,
+        //Array,
         MersenneTwister,
     }
 
@@ -29,10 +29,10 @@ internal sealed class RandomSample : MonoBehaviour
         internal void Check(T item)
         {
             if (item.CompareTo(Min) < 0)
-                LogRelay.Error($"[Random] {typeof(T).Name} item:{item} < {Min}");
+                LogRelay.Error($"[Sample] {typeof(T).Name} item:{item} < {Min}");
 
             if (item.CompareTo(Max) >= 0)
-                LogRelay.Error($"[Random] {typeof(T).Name} item:{item} >= {Max}");
+                LogRelay.Error($"[Sample] {typeof(T).Name} item:{item} >= {Max}");
 
             _value.Add(item);
         }
@@ -59,8 +59,8 @@ internal sealed class RandomSample : MonoBehaviour
         {
             case RandomType.System: RandomProxy.Inject(new SystemRandom(_seed)); break;
             case RandomType.Unity: RandomProxy.Inject(new UnityRandom(_seed)); break;
-            case RandomType.Array: RandomProxy.Inject(new ArrayRandom(_seed)); break;
-            case RandomType.MersenneTwister: RandomProxy.Inject(new MersenneTwisterRandom(_seed)); break;
+            //case RandomType.Array: RandomProxy.Inject(new ArrayRandom(_seed)); break;
+            case RandomType.MersenneTwister: RandomProxy.Inject(new MtRandom(_seed)); break;
         }
     }
     private void Update()
