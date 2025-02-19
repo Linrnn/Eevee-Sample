@@ -266,6 +266,9 @@ MonoBehaviour:
   _testSin: 1
   _testCos: 1
   _testTan: 1
+  _testCot: 1
+  _testAsin: 1
+  _testAcos: 1
 --- !u!1 &863387471
 GameObject:
   m_ObjectHideFlags: 0
