@@ -272,6 +272,11 @@ MonoBehaviour:
   _testAtan: 1
   _testAtan2: 1
   _testAcot: 1
+  _testPow2: 1
+  _testPow: 1
+  _testLog2: 1
+  _testLn: 1
+  _testLg: 1
 --- !u!1 &863387471
 GameObject:
   m_ObjectHideFlags: 0
