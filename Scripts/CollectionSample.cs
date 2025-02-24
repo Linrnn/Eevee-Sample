@@ -12,7 +12,7 @@ public sealed class CollectionSample : MonoBehaviour
     private readonly List<int> _list = new();
     private readonly Stack<int> _stack = new();
     private readonly HashSet<int> _hashSet = new();
-    private readonly WeakOrderList<int> _weakOrderList = new();
+    [SerializeField] private WeakOrderList<int> _weakOrderList = new();
 
     private void OnEnable()
     {
