@@ -15,13 +15,13 @@ internal sealed class RandomSample : MonoBehaviour
     {
         System,
         Unity,
-        //Array,
         MersenneTwister,
     }
 
     [Serializable]
     private sealed class MinMax<T> where T : struct, IComparable<T>
     {
+        [SerializeField] internal bool Random = true;
         [SerializeField] internal T Min;
         [SerializeField] internal T Max;
         [SerializeField] private List<T> _value = new();
@@ -42,7 +42,7 @@ internal sealed class RandomSample : MonoBehaviour
 
     [SerializeField] private RandomType _randomType;
     [SerializeField] private int _seed;
-    [SerializeField] private ulong _times;
+    [SerializeField] private int _times;
 
     [Space] [SerializeField] private MinMax<sbyte> _sbyte;
     [SerializeField] private MinMax<byte> _byte;
@@ -52,6 +52,8 @@ internal sealed class RandomSample : MonoBehaviour
     [SerializeField] private MinMax<uint> _uint;
     [SerializeField] private MinMax<long> _long;
     [SerializeField] private MinMax<ulong> _ulong;
+    [SerializeField] private MinMax<Fixed64> _fixed64;
+    [SerializeField] private MinMax<Fixed64> _fixed64_01;
 
     private void OnEnable()
     {
@@ -59,7 +61,6 @@ internal sealed class RandomSample : MonoBehaviour
         {
             case RandomType.System: RandomProxy.Inject(new SystemRandom(_seed)); break;
             case RandomType.Unity: RandomProxy.Inject(new UnityRandom(_seed)); break;
-            //case RandomType.Array: RandomProxy.Inject(new ArrayRandom(_seed)); break;
             case RandomType.MersenneTwister: RandomProxy.Inject(new MtRandom(_seed)); break;
         }
     }
@@ -67,38 +68,88 @@ internal sealed class RandomSample : MonoBehaviour
     {
         Profiler.BeginSample("RandomSample.Update");
 
-        #region loop random
+        #region Number
         _sbyte.Clean();
-        for (ulong i = 0; i < _times; ++i)
-            _sbyte.Check(RandomRelay.Get(_sbyte.Min, _sbyte.Max));
+        if (_sbyte.Random)
+            for (int i = 0; i < _times; ++i)
+                _sbyte.Check(RandomRelay.SByte(_sbyte.Min, _sbyte.Max));
 
         _byte.Clean();
-        for (ulong i = 0; i < _times; ++i)
-            _byte.Check(RandomRelay.Get(_byte.Min, _byte.Max));
+        if (_byte.Random)
+            for (int i = 0; i < _times; ++i)
+                _byte.Check(RandomRelay.Byte(_byte.Min, _byte.Max));
 
         _short.Clean();
-        for (ulong i = 0; i < _times; ++i)
-            _short.Check(RandomRelay.Get(_short.Min, _short.Max));
+        if (_short.Random)
+            for (int i = 0; i < _times; ++i)
+                _short.Check(RandomRelay.Short(_short.Min, _short.Max));
 
         _ushort.Clean();
-        for (ulong i = 0; i < _times; ++i)
-            _ushort.Check(RandomRelay.Get(_ushort.Min, _ushort.Max));
+        if (_ushort.Random)
+            for (int i = 0; i < _times; ++i)
+                _ushort.Check(RandomRelay.UShort(_ushort.Min, _ushort.Max));
 
         _int.Clean();
-        for (ulong i = 0; i < _times; ++i)
-            _int.Check(RandomRelay.Get(_int.Min, _int.Max));
+        if (_int.Random)
+            for (int i = 0; i < _times; ++i)
+                _int.Check(RandomRelay.Int(_int.Min, _int.Max));
 
         _uint.Clean();
-        for (ulong i = 0; i < _times; ++i)
-            _uint.Check(RandomRelay.Get(_uint.Min, _uint.Max));
+        if (_uint.Random)
+            for (int i = 0; i < _times; ++i)
+                _uint.Check(RandomRelay.UInt(_uint.Min, _uint.Max));
 
         _long.Clean();
-        for (ulong i = 0; i < _times; ++i)
-            _long.Check(RandomRelay.Get(_long.Min, _long.Max));
+        if (_long.Random)
+            for (int i = 0; i < _times; ++i)
+                _long.Check(RandomRelay.Long(_long.Min, _long.Max));
 
         _ulong.Clean();
-        for (ulong i = 0; i < _times; ++i)
-            _ulong.Check(RandomRelay.Get(_ulong.Min, _ulong.Max));
+        if (_ulong.Random)
+            for (int i = 0; i < _times; ++i)
+                _ulong.Check(RandomRelay.ULong(_ulong.Min, _ulong.Max));
+
+        _fixed64.Clean();
+        if (_fixed64.Random)
+            for (int i = 0; i < _times; ++i)
+                _fixed64.Check(RandomRelay.Number(_fixed64.Min, _fixed64.Max));
+
+        _fixed64_01.Clean();
+        if (_fixed64_01.Random)
+            for (int i = 0; i < _times; ++i)
+                _fixed64_01.Check(RandomRelay.Number());
+        #endregion
+
+        #region Circle/Sphere
+        for (int i = 0; i < _times; ++i)
+        {
+            var circle = RandomRelay.OnUnitCircle();
+            if (circle.Magnitude() != Fixed64.One)
+                LogRelay.Error($"[Sample] OnUnitCircle {circle}.Magnitude != 1 ");
+        }
+
+        for (int i = 0; i < _times; ++i)
+        {
+            var radius = RandomRelay.Number(1, 10);
+            var circle = RandomRelay.InCircle(radius);
+            if (circle.SqrMagnitude() > radius.Sqr())
+                LogRelay.Error($"[Sample] InCircle {circle}.Magnitude > {radius.Sqrt()} ");
+        }
+
+        for (int i = 0; i < _times; ++i)
+        {
+            var sphere = RandomRelay.OnUnitSphere();
+            if (sphere.Magnitude() != Fixed64.One)
+                LogRelay.Error($"[Sample] OnUnitSphere {sphere}.Magnitude != 1 ");
+        }
+
+        for (int i = 0; i < _times; ++i)
+        {
+            var radius = RandomRelay.Number(1, 10);
+            var sphere = RandomRelay.InSphere(radius);
+            if (sphere.SqrMagnitude() > radius.Sqr())
+                LogRelay.Error($"[Sample] InSphere {sphere}.Magnitude > {radius.Sqrt()} ");
+        }
         #endregion
 
         Profiler.EndSample();
