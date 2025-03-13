@@ -1,5 +1,5 @@
-﻿using Eevee.Fixed;
-using Eevee.Log;
+﻿using Eevee.Log;
+using Eevee.Random;
 using UnityEngine;
 
 public sealed class ProxySample : MonoBehaviour
