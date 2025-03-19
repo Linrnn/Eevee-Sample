@@ -174,7 +174,7 @@ GameObject:
   - component: {fileID: 279509877}
   - component: {fileID: 279509878}
   m_Layer: 0
-  m_Name: "\u5411\u91CF\u793A\u4F8B"
+  m_Name: "\u786E\u5B9A\u6027\u5E93\u793A\u4F8B"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -207,27 +207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7a7e7d9d527a5747a3b2ec263710761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Vector2:
-    X:
-      RawValue: 0
-    Y:
-      RawValue: 0
-  Vector3:
-    X:
-      RawValue: 0
-    Y:
-      RawValue: 0
-    Z:
-      RawValue: 0
-  Vector4:
-    X:
-      RawValue: 0
-    Y:
-      RawValue: 0
-    Z:
-      RawValue: 0
-    W:
-      RawValue: 0
+  times: 100
 --- !u!1 &454807234
 GameObject:
   m_ObjectHideFlags: 0
