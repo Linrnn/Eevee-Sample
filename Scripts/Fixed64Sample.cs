@@ -211,7 +211,8 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
         foreach (var left in _fixed64SmallNumbers)
         {
-            var right = _fixed64SmallNumbers[_random.GetInt32(0, _fixed64SmallNumbers.Count)];
+            var item = _fixed64SmallNumbers[_random.GetInt32(0, _fixed64SmallNumbers.Count)];
+            var right = item == 0 ? 0.01 : item;
             var fDiv = left / right;
             var sDiv = (Fixed64)((decimal)left / (decimal)right);
 

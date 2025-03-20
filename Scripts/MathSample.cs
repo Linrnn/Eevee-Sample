@@ -1,10 +1,12 @@
 ﻿using Eevee.Fixed;
 using Eevee.Log;
 using Eevee.Random;
+using SMatrix4x4 = System.Numerics.Matrix4x4;
 using UMath = UnityEngine.Mathf;
 using UMatrix4x4 = UnityEngine.Matrix4x4;
 using UPlane = UnityEngine.Plane;
 using UQuaternion = UnityEngine.Quaternion;
+using URandom = UnityEngine.Random;
 using URay = UnityEngine.Ray;
 using URect = UnityEngine.Rect;
 using UVector2 = UnityEngine.Vector2;
@@ -21,6 +23,7 @@ internal sealed class MathSample : UnityEngine.MonoBehaviour
     private readonly Fixed64 _epsilon0001 = 0.001;
     private readonly Fixed64 _epsilon001 = 0.01;
     private readonly Fixed64 _epsilon01 = 0.1;
+    private readonly Fixed64 _epsilon02 = 0.2;
 
     private void Update()
     {
@@ -31,11 +34,15 @@ internal sealed class MathSample : UnityEngine.MonoBehaviour
             var num2 = RandomRelay.Number(0, 100);
             var vec2D0 = new Vector2D(RandomRelay.Number(-100, 100), RandomRelay.Number(-100, 100));
             var vec2D1 = new Vector2D(RandomRelay.Number(-10, 800), RandomRelay.Number(-10, 800));
-            var vec2D2 = new Vector2D(RandomRelay.Number(0, 1000), RandomRelay.Number(0, 1000));
+            var vec2D2 = new Vector2D(RandomRelay.Number(0, 100), RandomRelay.Number(0, 100));
+            var vec2D3 = new Vector2D(RandomRelay.Number(0, 100), RandomRelay.Number(0, 100));
+            var vec2D4 = new Vector2D(RandomRelay.Number(-100, 100), RandomRelay.Number(-100, 100));
             var vec3D0 = new Vector3D(RandomRelay.Number(0, 10), RandomRelay.Number(0, 10), RandomRelay.Number(0, 10));
             var vec3D1 = new Vector3D(RandomRelay.Number(-10, 10), RandomRelay.Number(-10, 10), RandomRelay.Number(-10, 10));
             var vec3D2 = new Vector3D(RandomRelay.Number(-10, 10).Floor(), RandomRelay.Number(-10, 10).Floor(), RandomRelay.Number(-10, 10).Floor());
             var vec3D3 = new Vector3D(RandomRelay.Number(-10, 10).Floor(), RandomRelay.Number(-10, 10).Floor(), RandomRelay.Number(-10, 10).Floor());
+            var vec3D4 = new Vector3D(RandomRelay.Number(-180, 180), RandomRelay.Number(-180, 180), RandomRelay.Number(-180, 180));
+            var vec3D5 = new Vector3D(RandomRelay.Number(-360, 360), RandomRelay.Number(-360, 360), RandomRelay.Number(-360, 360));
             var vec4D0 = new Vector4D(RandomRelay.Number(-100, 100), RandomRelay.Number(-100, 100), RandomRelay.Number(-100, 100), RandomRelay.Number(-100, 100));
             var vec4D1 = new Vector4D(RandomRelay.Number(-100, 100), RandomRelay.Number(-100, 100), RandomRelay.Number(-100, 100), RandomRelay.Number(-100, 100));
             var vec4D10 = new Vector4D(RandomRelay.Number(-10, 10).Floor(), RandomRelay.Number(-10, 10).Floor(), RandomRelay.Number(-10, 10).Floor(), RandomRelay.Number(-10, 10).Floor());
@@ -44,11 +51,43 @@ internal sealed class MathSample : UnityEngine.MonoBehaviour
             var vec4D13 = new Vector4D(RandomRelay.Number(-10, 10).Floor(), RandomRelay.Number(-10, 10).Floor(), RandomRelay.Number(-10, 10).Floor(), RandomRelay.Number(-10, 10).Floor());
             var quaternion0 = RandomRelay.Quaternion();
             var quaternion1 = RandomRelay.Quaternion();
+            var quaternion2 = URandom.rotation;
             var rect0 = new Rectangle(in vec2D0, in vec2D2);
+            var rect1 = new Rectangle(in vec2D2, in vec2D0);
             var ray3D0 = new Ray3D(in vec3D0, in vec3D1);
             var plane0 = new Plane(in vec3D0, num2);
             var plane1 = new Plane(in Vector3D.Up, Fixed64.Zero);
             var matrix4X40 = new Matrix4X4(in vec4D10, in vec4D11, in vec4D12, in vec4D13);
+
+            var diffEuler = Maths.Euler(in vec3D5) - UQuaternion.Euler((UVector3)vec3D5);
+            if (diffEuler.SqrMagnitude() >= _epsilon0001)
+                LogRelay.Error($"[Sample] Euler Diff:{diffEuler} not 0.");
+
+            var diffV2Angle = Maths.Angle(in vec2D0, in vec2D4) - UVector2.Angle((UVector2)vec2D0, (UVector2)vec2D4);
+            if (diffV2Angle.Abs() >= _epsilon01)
+                LogRelay.Error($"[Sample] Angle V2 Diff:{diffV2Angle} not 0.");
+
+            var diffV3Angle = Maths.Angle(in vec3D2, in vec3D3) - UVector3.Angle((UVector3)vec3D2, (UVector3)vec3D3);
+            if (diffV3Angle.Abs() >= _epsilon0001)
+                LogRelay.Error($"[Sample] Angle V3 Diff:{diffV3Angle} not 0.");
+
+            var diffQAngle = Maths.Angle(in quaternion0, in quaternion1) - UQuaternion.Angle((UQuaternion)quaternion0, (UQuaternion)quaternion1);
+            if (diffQAngle.Abs() >= _epsilon02)
+                LogRelay.Error($"[Sample] Angle Q Diff:{diffQAngle} not 0.");
+
+            var diffV2SignedAngle = Maths.SignedAngle(in vec2D0, in vec2D4) - UVector2.SignedAngle((UVector2)vec2D0, (UVector2)vec2D4);
+            if (diffV2SignedAngle.Abs() >= _epsilon01)
+                LogRelay.Error($"[Sample] SignedAngle V2 Diff:{diffV2SignedAngle} not 0.");
+
+            var diffV3SignedAngle = Maths.SignedAngle(in vec3D2, in vec3D3, in Vector3D.Up) - UVector3.SignedAngle((UVector3)vec3D2, (UVector3)vec3D3, UVector3.up);
+            if (diffV3SignedAngle.Abs() >= _epsilon0001)
+                LogRelay.Error($"[Sample] SignedAngle V3 Diff:{diffV3SignedAngle} not 0.");
+
+            if (rect0.Overlaps(in rect1, true) != ((URect)rect0).Overlaps((URect)rect1, true))
+                LogRelay.Error("[Sample] Overlaps");
+
+            if (rect1.Contains(vec2D3.X, vec2D3.Y, true) != ((URect)rect1).Contains((UVector2)vec2D3, true))
+                LogRelay.Error("[Sample] Contains");
 
             var uPointToNormalized = URect.PointToNormalized((URect)rect0, (UVector2)vec2D1);
             var fPointToNormalized = Maths.PointToNormalized(in rect0, in vec2D1);
@@ -124,12 +163,12 @@ internal sealed class MathSample : UnityEngine.MonoBehaviour
 
             plane1.RayCast(in ray3D0, out Vector3D fPoint);
             ((UPlane)plane1).Raycast((URay)ray3D0, out float uEnter);
-            var diffRayCast = fPoint - ((URay)ray3D0).GetPoint(uEnter);
-            if (diffRayCast.SqrMagnitude() >= _epsilon001)
+            var diffRayCast = fPoint - (uEnter > 0 ? ((URay)ray3D0).GetPoint(uEnter) : UVector3.zero);
+            if (diffRayCast.SqrMagnitude().Abs() >= _epsilon0001)
                 LogRelay.Error($"[Sample] RayCast Diff:{diffRayCast} not 0.");
 
-            var diffTRS = Matrix4X4.TRS(in vec3D2, in Quaternion.Identity, in vec3D3) - UMatrix4x4.TRS((UVector3)vec3D2, UQuaternion.identity, (UVector3)vec3D3);
-            if (diffTRS != Matrix4X4.Zero)
+            var diffTRS = Matrix4X4.TRS(in vec3D2, quaternion2, in vec3D3) - UMatrix4x4.TRS((UVector3)vec3D2, quaternion2, (UVector3)vec3D3);
+            if (diffTRS.SqrMagnitude() >= _epsilon0001)
                 LogRelay.Error($"[Sample] TRS Diff:{diffTRS} not 0.");
 
             var diffDeterminant = matrix4X40.Determinant() - ((UMatrix4x4)matrix4X40).determinant;
@@ -140,16 +179,19 @@ internal sealed class MathSample : UnityEngine.MonoBehaviour
             if (diffTranspose != Matrix4X4.Zero)
                 LogRelay.Error($"[Sample] Transpose Diff:{diffTranspose} not 0.");
 
-            var fInverse = matrix4X40.Inverse();
-            var diffInverse = fInverse - UMatrix4x4.Inverse((UMatrix4x4)matrix4X40);
-            if (fInverse.Determinant() != 0 && diffInverse.Determinant() >= _epsilon0001)
+            bool bInverse = matrix4X40.Inverse(out var fInverse);
+            bool sInverse = SMatrix4x4.Invert((SMatrix4x4)matrix4X40, out var sInvert);
+            //var diffInverse = fInverse - UMatrix4x4.Inverse((UMatrix4x4)matrix4X40);
+            var diffInverse = bInverse ? fInverse - sInvert : default;
+            if (bInverse && diffInverse.SqrMagnitude() >= _epsilon0001)
                 LogRelay.Error($"[Sample] Inverse Diff:{diffInverse} not 0.");
         }
     }
 
-    private UVector3 As(in Vector3D value) => (UVector3)value;
-    private UQuaternion As(in Quaternion value) => (UQuaternion)value;
-    private UMatrix4x4 As(in Matrix4X4 value) => (UMatrix4x4)value;
+    private UVector3 Asu(in Vector3D value) => (UVector3)value;
+    private UQuaternion Asu(in Quaternion value) => (UQuaternion)value;
+    private UMatrix4x4 Asu(in Matrix4X4 value) => (UMatrix4x4)value;
+    private SMatrix4x4 Ass(in Matrix4X4 value) => (SMatrix4x4)value;
 
     private UQuaternion RotateTowards(in UQuaternion from, in UQuaternion to, float maxDelta)
     {
