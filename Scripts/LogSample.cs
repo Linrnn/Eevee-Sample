@@ -1,4 +1,4 @@
-﻿using Eevee.Log;
+﻿using Eevee.Debug;
 using System;
 using UnityEngine;
 
@@ -21,12 +21,13 @@ internal sealed class LogSample : MonoBehaviour
 
     private void OnEnable()
     {
-        LogProxy.Inject(new SampleLog());
         LogRelay.Log("[Sample] SampleLog.Log");
         LogRelay.Error("[Sample] SampleLog.Error");
 
-        LogProxy.UnInject();
+        LogProxy.Inject(new SampleLog());
         LogRelay.Log("[Sample] Default.Log");
         LogRelay.Error("[Sample] Default.Error");
+
+        LogProxy.UnInject();
     }
 }

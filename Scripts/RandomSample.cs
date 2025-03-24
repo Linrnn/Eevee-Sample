@@ -1,5 +1,5 @@
-﻿using Eevee.Fixed;
-using Eevee.Log;
+﻿using Eevee.Debug;
+using Eevee.Fixed;
 using Eevee.Random;
 using System;
 using System.Collections.Generic;

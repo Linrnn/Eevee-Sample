@@ -1,4 +1,4 @@
-﻿using Eevee.Log;
+﻿using Eevee.Debug;
 using Eevee.Random;
 using UnityEngine;
 

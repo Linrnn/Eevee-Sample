@@ -1,5 +1,5 @@
 ﻿using Eevee.Collection;
-using Eevee.Log;
+using Eevee.Debug;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
