@@ -1,4 +1,4 @@
-﻿using Eevee.Debug;
+﻿using Eevee.Diagnosis;
 using Eevee.Fixed;
 using Eevee.Random;
 using SMatrix4x4 = System.Numerics.Matrix4x4;

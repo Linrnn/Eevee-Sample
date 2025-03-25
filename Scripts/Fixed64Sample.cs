@@ -1,5 +1,5 @@
 ﻿using Box2DSharp.Common;
-using Eevee.Debug;
+using Eevee.Diagnosis;
 using Eevee.Fixed;
 using Eevee.Random;
 using System;
