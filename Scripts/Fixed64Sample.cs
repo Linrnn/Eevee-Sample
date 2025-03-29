@@ -120,7 +120,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
         _fpSmallNumbers.Clear();
 
         for (int i = 0; i < count >> 1; ++i)
-            _numbers.Add(_random.GetInt16(0, short.MaxValue));
+            _numbers.Add(_random.GetInt32(0, short.MaxValue));
         for (int i = count >> 1; i < count; ++i)
             _numbers.Add(_random.GetInt32(short.MaxValue, int.MaxValue));
         for (int i = 0; i < _numbers.Count; ++i)
@@ -131,7 +131,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
         foreach (long number in _numbers)
         {
-            bool sign = Convert.ToBoolean(_random.GetByte(0, 2));
+            bool sign = Convert.ToBoolean(_random.GetInt32(0, 2));
             long rawValue = ((sign ? number : -number) << 32) + (sign ? 1L : -1L);
 
             _fixed64BigNumbers.Add(number);

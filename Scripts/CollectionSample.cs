@@ -13,6 +13,7 @@ public sealed class CollectionSample : MonoBehaviour
     private readonly Stack<int> _stack = new();
     private readonly HashSet<int> _hashSet = new();
     [SerializeField] private WeakOrderList<int> _weakOrderList = new();
+    [SerializeField] private FixedOrderSet<int> _fixedOrderSet = new();
 
     private void OnEnable()
     {
@@ -45,6 +46,14 @@ public sealed class CollectionSample : MonoBehaviour
 
         _weakOrderList.Update0GC(new[] { 40, 41, 42, 43 });
         LogRelay.Log($"[Sample] Update0GC:40-41-42-43; {Log(_weakOrderList)}");
+
+        _fixedOrderSet.Add(3);
+        _fixedOrderSet.Add(1);
+        _fixedOrderSet.Add(2);
+        _fixedOrderSet.Add(1);
+        _fixedOrderSet.Remove(3);
+        _fixedOrderSet.Remove(0);
+
     }
     private void Update()
     {
@@ -57,7 +66,7 @@ public sealed class CollectionSample : MonoBehaviour
         _list.AddRange0GC(_stack);
         _list.RemoveRange0GC(_stack);
         _stack.GetFirst0GC();
-        _hashSet.Union0GC(_stack);
+        _hashSet.UnionWith0GC(_stack);
         _weakOrderList.InsertRange0GC(0, _stack);
 
         Profiler.EndSample();

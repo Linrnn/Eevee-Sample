@@ -414,6 +414,10 @@ MonoBehaviour:
   _weakOrderList:
     _items: 
     _size: 0
+  _fixedOrderSet:
+    _order:
+      _items: 
+      _size: 0
 --- !u!1 &1579350787
 GameObject:
   m_ObjectHideFlags: 0
