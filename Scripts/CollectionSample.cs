@@ -1,5 +1,6 @@
 ﻿using Eevee.Collection;
-using Eevee.Diagnosis;
+using Eevee.Random;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -9,79 +10,291 @@ using UnityEngine.Profiling;
 /// </summary>
 public sealed class CollectionSample : MonoBehaviour
 {
-    private readonly List<int> _list = new();
-    private readonly Stack<int> _stack = new();
-    private readonly HashSet<int> _hashSet = new();
-    [SerializeField] private WeakOrderList<int> _weakOrderList = new();
-    [SerializeField] private FixedOrderSet<int> _fixedOrderSet = new();
+    private IRandom _random;
+    [SerializeField] private int _times;
+
+    private readonly List<int> _helpList = new();
+    private readonly List<int> _sysList = new();
+    [SerializeField] private WeakOrderList<int> _eveList = new();
+
+    private readonly HashSet<int> _sysSet = new();
+    [SerializeField] private FixedOrderSet<int> _eveSet = new();
 
     private void OnEnable()
     {
-        for (int i = 0; i < 10; ++i)
-            _weakOrderList.Add(i);
-
-        _weakOrderList.RemoveAt(0);
-        _weakOrderList.RemoveAt(5);
-        LogRelay.Log($"[Sample] RemoveAt:0,5; {Log(_weakOrderList)}");
-
-        _weakOrderList.Remove(1);
-        _weakOrderList.Remove(3);
-        LogRelay.Log($"[Sample] Remove:1,3; {Log(_weakOrderList)}");
-
-        _weakOrderList.Insert(3, 10);
-        _weakOrderList.Insert(0, 11);
-        LogRelay.Log($"[Sample] Insert:3,10;0,11; {Log(_weakOrderList)}");
-
-        _weakOrderList.RemoveRange(3, 4);
-        LogRelay.Log($"[Sample] RemoveRange:3,4; {Log(_weakOrderList)}");
-
-        _weakOrderList.RemoveRange(1, 2);
-        LogRelay.Log($"[Sample] RemoveRange:1,2; {Log(_weakOrderList)}");
-
-        _weakOrderList.InsertRange(2, new[] { 20, 21, 22, 23 });
-        LogRelay.Log($"[Sample] InsertRange:2,20-21-22-23; {Log(_weakOrderList)}");
-
-        _weakOrderList.InsertRange(_weakOrderList.Count - 2, new[] { 30, 31, 32, 33 });
-        LogRelay.Log($"[Sample] InsertRange:count-2,30-31-32-33; {Log(_weakOrderList)}");
-
-        _weakOrderList.Update0GC(new[] { 40, 41, 42, 43 });
-        LogRelay.Log($"[Sample] Update0GC:40-41-42-43; {Log(_weakOrderList)}");
-
-        _fixedOrderSet.Add(3);
-        _fixedOrderSet.Add(1);
-        _fixedOrderSet.Add(2);
-        _fixedOrderSet.Add(1);
-        _fixedOrderSet.Remove(3);
-        _fixedOrderSet.Remove(0);
-
+        _random = new UnityRandom();
     }
     private void Update()
     {
-        Profiler.BeginSample("CollectionSample.Update");
         Clean();
 
-        for (int i = 0; i < 10; ++i)
-            _stack.Push(i);
-
-        _list.AddRange0GC(_stack);
-        _list.RemoveRange0GC(_stack);
-        _stack.GetFirst0GC();
-        _hashSet.UnionWith0GC(_stack);
-        _weakOrderList.InsertRange0GC(0, _stack);
-
+        #region Profiler List
+        Profiler.BeginSample("CollectionSample.Update.WeakOrderList`1");
+        Test_List_Add();
+        Test_List_Insert();
+        Test_List_InsertRange();
+        Test_List_Remove();
+        Test_List_RemoveAt();
+        Test_List_RemoveRange();
         Profiler.EndSample();
+        #endregion
+
+        #region Profiler Set
+        Profiler.BeginSample("CollectionSample.Update.FixedOrderSet`1");
+        Test_Set_Add();
+        Test_Set_Remove();
+        Test_Set_UnionWith();
+        Test_Set_IntersectWith();
+        Test_Set_ExceptWith();
+        Test_Set_SymmetricExceptWith();
+        Test_Set_IsSubsetOf();
+        Test_Set_IsSupersetOf();
+        Test_Set_IsProperSubsetOf();
+        Test_Set_IsProperSupersetOf();
+        Test_Set_Overlaps();
+        Profiler.EndSample();
+        #endregion
     }
     private void OnDisable()
     {
         Clean();
     }
 
+    #region Test List
+    private void Test_List_Add()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int item = RandomItem();
+            _sysList.Add(item);
+            _eveList.Add(item);
+        }
+
+        Test_List();
+    }
+    private void Test_List_Insert()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int index = _random.GetInt32(0, GetListCount());
+            int item = RandomItem();
+            _sysList.Insert(index, item);
+            _eveList.Insert(index, item);
+        }
+
+        Test_List();
+    }
+    private void Test_List_InsertRange()
+    {
+        HelperListAdd();
+        int index = _random.GetInt32(0, GetListCount());
+        _sysList.InsertRange(index, _helpList);
+        _eveList.InsertRange0GC(index, _helpList);
+
+        Test_List();
+    }
+    private void Test_List_Remove()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int item = RandomItem();
+            _sysList.Remove(item);
+            _eveList.Remove(item);
+        }
+
+        Test_List();
+    }
+    private void Test_List_RemoveAt()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int sIndex = _random.GetInt32(0, GetListCount());
+            int item = _sysList[sIndex];
+            int eIndex = _eveList.IndexOf(item);
+
+            _sysList.RemoveAt(sIndex);
+            _eveList.RemoveAt(eIndex);
+        }
+
+        Test_List();
+    }
+    private void Test_List_RemoveRange()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int index = _random.GetInt32(0, GetListCount());
+            int count = _random.GetInt32(0, GetListCount() - index);
+
+            _eveList.Update0GC(_sysList);
+            _sysList.RemoveRange(index, count);
+            _eveList.RemoveRange(index, count);
+        }
+
+        Test_List();
+    }
+    private void Test_List()
+    {
+        if (_sysList.Count != _eveList.Count)
+            throw new Exception($"_sysList.Count:{_sysList.Count} != _eveList.Count:{_eveList.Count}");
+
+        _helpList.Update0GC(_sysList);
+
+        foreach (int item in _eveList)
+            if (!_helpList.Remove(item))
+                throw new Exception($"_sysList:{_sysList.JoinString()} != _eveList:{_eveList.JoinString()}");
+
+        if (!_helpList.IsEmpty())
+            throw new Exception($"_helpList.Count:{_helpList.Count} != 0");
+    }
+    #endregion
+
+    #region Test Set
+    private void Test_Set_Add()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int item = RandomItem();
+            _sysSet.Add(item);
+            _eveSet.Add(item);
+        }
+
+        Test_Set();
+    }
+    private void Test_Set_Remove()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int item = RandomItem();
+            _sysSet.Remove(item);
+            _eveSet.Remove(item);
+        }
+
+        Test_Set();
+    }
+    private void Test_Set_UnionWith()
+    {
+        HelperListAdd();
+        _sysSet.UnionWith(_helpList);
+        _eveSet.UnionWith(_helpList);
+        Test_Set();
+    }
+    private void Test_Set_IntersectWith()
+    {
+        HelperListAdd();
+        _sysSet.IntersectWith(_helpList);
+        _eveSet.IntersectWith(_helpList);
+        Test_Set();
+    }
+    private void Test_Set_ExceptWith()
+    {
+        HelperListAdd();
+        _sysSet.ExceptWith(_helpList);
+        _eveSet.ExceptWith(_helpList);
+        Test_Set();
+    }
+    private void Test_Set_SymmetricExceptWith()
+    {
+        HelperListAdd();
+        _sysSet.SymmetricExceptWith(_helpList);
+        _eveSet.SymmetricExceptWith(_helpList);
+        Test_Set();
+    }
+    private void Test_Set_IsSubsetOf()
+    {
+        Test_Set_HelperList_AddOrRemove(true);
+        if (_sysSet.IsSubsetOf(_helpList) != _eveSet.IsSubsetOf(_helpList))
+            ExceptionSet(nameof(ISet<int>.IsSubsetOf));
+
+        Test_Set_HelperList_AddOrRemove(false);
+        if (_sysSet.IsSubsetOf(_helpList) != _eveSet.IsSubsetOf(_helpList))
+            ExceptionSet(nameof(ISet<int>.IsSubsetOf));
+    }
+    private void Test_Set_IsSupersetOf()
+    {
+        Test_Set_HelperList_AddOrRemove(true);
+        if (_sysSet.IsSupersetOf(_helpList) != _eveSet.IsSupersetOf(_helpList))
+            ExceptionSet(nameof(ISet<int>.IsSupersetOf));
+
+        Test_Set_HelperList_AddOrRemove(false);
+        if (_sysSet.IsSupersetOf(_helpList) != _eveSet.IsSupersetOf(_helpList))
+            ExceptionSet(nameof(ISet<int>.IsSupersetOf));
+    }
+    private void Test_Set_IsProperSubsetOf()
+    {
+        Test_Set_HelperList_AddOrRemove(true);
+        if (_sysSet.IsProperSubsetOf(_helpList) != _eveSet.IsProperSubsetOf(_helpList))
+            ExceptionSet(nameof(ISet<int>.IsProperSubsetOf));
+
+        Test_Set_HelperList_AddOrRemove(false);
+        if (_sysSet.IsProperSubsetOf(_helpList) != _eveSet.IsProperSubsetOf(_helpList))
+            ExceptionSet(nameof(ISet<int>.IsProperSubsetOf));
+    }
+    private void Test_Set_IsProperSupersetOf()
+    {
+        Test_Set_HelperList_AddOrRemove(true);
+        if (_sysSet.IsProperSupersetOf(_helpList) != _eveSet.IsProperSupersetOf(_helpList))
+            ExceptionSet(nameof(ISet<int>.IsProperSupersetOf));
+
+        Test_Set_HelperList_AddOrRemove(false);
+        if (_sysSet.IsProperSupersetOf(_helpList) != _eveSet.IsProperSupersetOf(_helpList))
+            ExceptionSet(nameof(ISet<int>.IsProperSupersetOf));
+    }
+    private void Test_Set_Overlaps()
+    {
+        HelperListAdd();
+        if (_sysSet.Overlaps(_helpList) != _eveSet.Overlaps(_helpList))
+            ExceptionSet(nameof(ISet<int>.Overlaps));
+    }
+    private void Test_Set()
+    {
+        if (_sysSet.Count != _eveSet.Count)
+            throw new Exception($"_sysSet.Count:{_sysSet.Count} != _eveSet.Count:{_eveSet.Count}");
+
+        _ = _sysSet; // 平衡“_eveSet”的引用次数
+        _ = _sysSet; // 平衡“_eveSet”的引用次数
+        if (!_eveSet.CheckEquals())
+            throw new Exception($"CheckEquals fail, _eveSet:{_eveSet.JoinString()}");
+
+        if (!_eveSet.SetEquals(_sysSet))
+            throw new Exception($"SetEquals fail, _sysSet:{_sysSet.JoinString()}, _eveSet:{_eveSet.JoinString()}");
+
+        if (!_sysSet.SetEquals(_eveSet))
+            throw new Exception($"SetEquals fail, _sysSet:{_sysSet.JoinString()}, _eveSet:{_eveSet.JoinString()}");
+    }
+    private void Test_Set_HelperList_AddOrRemove(bool addOrRemove)
+    {
+        _helpList.Clear();
+        _helpList.AddRange0GC(_sysSet);
+        _helpList.AddRange0GC(_eveSet);
+
+        if (addOrRemove)
+            for (int times = RandomTimes(), i = 0; i < times; ++i)
+                _helpList.Add(RandomItem());
+        else
+            for (int times = RandomTimes(), i = 0; i < times; ++i)
+                _helpList.Remove(RandomItem());
+    }
+    #endregion
+
+    private int GetListCount() => _sysList.Count + _eveList.Count >> 1;
+    private void HelperListAdd()
+    {
+        _helpList.Clear();
+        for (int i = 0; i < _times; ++i)
+            _helpList.Add(RandomItem());
+    }
+    private void ExceptionSet(string methodName)
+    {
+        throw new Exception($"{methodName} fail, _sysSet:{_sysSet.JoinString()}, _eveSet:{_eveSet.JoinString()}");
+    }
+    private int RandomItem() => _random.GetInt32(-100, 100);
+    private int RandomTimes() => _random.GetInt32(-9, 11);
     private void Clean()
     {
-        _list.Clear();
-        _stack.Clear();
-        _hashSet.Clear();
-        _weakOrderList.Clear();
+        _helpList.Clear();
+        _sysList.Clear();
+        _sysSet.Clear();
+        _eveList.Clear();
+        _eveSet.Clear();
     }
-    private string Log<T>(IEnumerable<T> list) => $"[{string.Join(',', list)}]";
 }
