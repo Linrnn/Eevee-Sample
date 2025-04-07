@@ -20,6 +20,10 @@ public sealed class CollectionSample : MonoBehaviour
     private readonly HashSet<int> _sysSet = new();
     [SerializeField] private FixedOrderSet<int> _eveSet = new();
 
+    private readonly Dictionary<int, int> _helpDic = new();
+    private readonly Dictionary<int, int> _sysDic = new();
+    [SerializeField] private FixedOrderDic<int, int> _eveDic = new();
+
     private void OnEnable()
     {
         _random = new UnityRandom();
@@ -52,6 +56,15 @@ public sealed class CollectionSample : MonoBehaviour
         Test_Set_IsProperSubsetOf();
         Test_Set_IsProperSupersetOf();
         Test_Set_Overlaps();
+        Profiler.EndSample();
+        #endregion
+
+        #region Profiler Dic
+        Profiler.BeginSample("CollectionSample.Update.FixedOrderDic`2");
+        Test_Dic_Set();
+        Test_Dic_Add();
+        Test_Dic_TryAdd();
+        Test_Dic_Remove();
         Profiler.EndSample();
         #endregion
     }
@@ -256,10 +269,10 @@ public sealed class CollectionSample : MonoBehaviour
             throw new Exception($"CheckEquals fail, _eveSet:{_eveSet.JoinString()}");
 
         if (!_eveSet.SetEquals(_sysSet))
-            throw new Exception($"SetEquals fail, _sysSet:{_sysSet.JoinString()}, _eveSet:{_eveSet.JoinString()}");
+            ExceptionSet(nameof(ISet<object>.SetEquals));
 
         if (!_sysSet.SetEquals(_eveSet))
-            throw new Exception($"SetEquals fail, _sysSet:{_sysSet.JoinString()}, _eveSet:{_eveSet.JoinString()}");
+            ExceptionSet(nameof(ISet<object>.SetEquals));
     }
     private void Test_Set_HelperList_AddOrRemove(bool addOrRemove)
     {
@@ -274,6 +287,100 @@ public sealed class CollectionSample : MonoBehaviour
             for (int times = RandomTimes(), i = 0; i < times; ++i)
                 _helpList.Remove(RandomItem());
     }
+    private void ExceptionSet(string methodName)
+    {
+        throw new Exception($"{methodName} fail, _sysSet:{_sysSet.JoinString()}, _eveSet:{_eveSet.JoinString()}");
+    }
+    #endregion
+
+    #region Test Dic
+    private void Test_Dic_Set()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int key = RandomItem();
+            int value = RandomItem();
+            _sysDic[key] = value;
+            _eveDic[key] = value;
+        }
+
+        Test_Dic();
+    }
+    private void Test_Dic_Add()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int key = RandomItem();
+            int value = RandomItem();
+            if (_sysDic.ContainsKey(key) != _eveDic.ContainsKey(key))
+                ExceptionDic(nameof(IDictionary<object, object>.Add));
+
+            if (!_sysDic.ContainsKey(key))
+                _sysDic.Add(key, value);
+
+            if (!_eveDic.ContainsKey(key))
+                _eveDic.Add(key, value);
+        }
+
+        Test_Dic();
+    }
+    private void Test_Dic_TryAdd()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int key = RandomItem();
+            int value = RandomItem();
+            if (_sysDic.TryAdd(key, value) != _eveDic.TryAdd(key, value))
+                ExceptionDic(nameof(Dictionary<object, object>.TryAdd));
+        }
+
+        Test_Dic();
+    }
+    private void Test_Dic_Remove()
+    {
+        for (int i = 0; i < _times; ++i)
+        {
+            int key = RandomItem();
+            _sysDic.Remove(key);
+            _eveDic.Remove(key);
+        }
+
+        Test_Dic();
+    }
+    private void Test_Dic()
+    {
+        if (_sysDic.Count != _eveDic.Count)
+            ExceptionDic(nameof(Test_Dic));
+
+        _ = _sysDic; // 平衡“_eveDic”的引用次数
+        _ = _sysDic; // 平衡“_eveDic”的引用次数
+        if (!_eveDic.CheckEquals())
+            ExceptionDic(nameof(Test_Dic));
+
+        _helpDic.Update0GC(_eveDic);
+        foreach (var pair in _sysDic)
+        {
+            if (_helpDic.Remove(pair.Key, out int value) && pair.Value == value)
+                continue;
+            ExceptionDic(nameof(Test_Dic));
+        }
+        if (!_helpDic.IsEmpty())
+            ExceptionDic(nameof(Test_Dic));
+
+        _helpDic.Update0GC(_sysDic);
+        foreach (var pair in _eveDic)
+        {
+            if (_helpDic.Remove(pair.Key, out int value) && pair.Value == value)
+                continue;
+            ExceptionDic(nameof(Test_Dic));
+        }
+        if (!_helpDic.IsEmpty())
+            ExceptionDic(nameof(Test_Dic));
+    }
+    private void ExceptionDic(string methodName)
+    {
+        throw new Exception($"{methodName} fail, _sysDic:{_sysDic.JoinString()}, _eveDic:{_eveDic.AsPair().JoinString()}");
+    }
     #endregion
 
     private int GetListCount() => _sysList.Count + _eveList.Count >> 1;
@@ -282,10 +389,6 @@ public sealed class CollectionSample : MonoBehaviour
         _helpList.Clear();
         for (int i = 0; i < _times; ++i)
             _helpList.Add(RandomItem());
-    }
-    private void ExceptionSet(string methodName)
-    {
-        throw new Exception($"{methodName} fail, _sysSet:{_sysSet.JoinString()}, _eveSet:{_eveSet.JoinString()}");
     }
     private int RandomItem() => _random.GetInt32(-100, 100);
     private int RandomTimes() => _random.GetInt32(-9, 11);
@@ -296,5 +399,8 @@ public sealed class CollectionSample : MonoBehaviour
         _sysSet.Clear();
         _eveList.Clear();
         _eveSet.Clear();
+        _helpDic.Clear();
+        _sysDic.Clear();
+        _eveDic.Clear();
     }
 }
