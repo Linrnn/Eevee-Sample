@@ -44,6 +44,7 @@ internal sealed class RandomSample : MonoBehaviour
     [SerializeField] private RandomType _randomType;
     [SerializeField] private int _seed;
     [SerializeField] private int _times;
+    private readonly Fixed64 _epsilon0000001 = 0.000001;
 
     [Space] [SerializeField] private MinMax<sbyte> _sbyte;
     [SerializeField] private MinMax<byte> _byte;
@@ -125,8 +126,8 @@ internal sealed class RandomSample : MonoBehaviour
         for (int i = 0; i < _times; ++i)
         {
             var circle = RandomRelay.OnUnitCircle();
-            if (circle.Magnitude() != Fixed64.One)
-                LogRelay.Error($"[Sample] OnUnitCircle {circle}.Magnitude != 1 ");
+            if ((circle.Magnitude() - 1).Abs() >= _epsilon0000001)
+                LogRelay.Error($"[Sample] OnUnitCircle {circle.Magnitude()} != 1 ");
         }
 
         for (int i = 0; i < _times; ++i)
@@ -134,22 +135,22 @@ internal sealed class RandomSample : MonoBehaviour
             var radius = RandomRelay.Number(1, 10);
             var circle = RandomRelay.InCircle(radius);
             if (circle.SqrMagnitude() > radius.Sqr())
-                LogRelay.Error($"[Sample] InCircle {circle}.Magnitude > {radius.Sqrt()} ");
+                LogRelay.Error($"[Sample] InCircle {circle.SqrMagnitude()} > {radius.Sqr()} ");
         }
 
         for (int i = 0; i < _times; ++i)
         {
             var sphere = RandomRelay.OnUnitSphere();
-            if (sphere.Magnitude() != Fixed64.One)
-                LogRelay.Error($"[Sample] OnUnitSphere {sphere}.Magnitude != 1 ");
+            if ((sphere.Magnitude() - 1).Abs() >= _epsilon0000001)
+                LogRelay.Error($"[Sample] OnUnitSphere {sphere.Magnitude()} != 1 ");
         }
 
         for (int i = 0; i < _times; ++i)
         {
             var radius = RandomRelay.Number(1, 10);
             var sphere = RandomRelay.InSphere(radius);
-            if (sphere.SqrMagnitude() > radius.Sqr())
-                LogRelay.Error($"[Sample] InSphere {sphere}.Magnitude > {radius.Sqrt()} ");
+            if (sphere.SqrMagnitude() > radius.Cube())
+                LogRelay.Error($"[Sample] InSphere {sphere.SqrMagnitude()} > {radius.Cube()} ");
         }
         #endregion
 

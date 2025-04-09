@@ -330,7 +330,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
         foreach (var deg in _fixed64Rad)
         {
-            if (Maths.CosDeg(deg) == Fixed64.Zero)
+            if (Maths.CosDeg(deg) == 0)
                 continue;
             var mod = (deg % 180 + 180) % 180;
             if (mod > 89 && mod < 91)
@@ -374,7 +374,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
         foreach (var rad in _fixed64Rad)
         {
-            if (Maths.Sin(rad) == Fixed64.Zero)
+            if (Maths.Sin(rad) == 0)
                 continue;
             if (((double)rad * 180 / Math.PI % 180 + 180) % 180 is < 1 or > 179)
                 continue;
@@ -389,7 +389,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
         foreach (var deg in _fixed64Rad)
         {
-            if (Maths.SinDeg(deg) == Fixed64.Zero)
+            if (Maths.SinDeg(deg) == 0)
                 continue;
             var mod = (deg % 180 + 180) % 180;
             if (mod < 1 || mod > 179)
