@@ -2,6 +2,7 @@
 using Eevee.Random;
 using System;
 using System.Collections.Generic;
+using Eevee.Pool;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -72,6 +73,10 @@ public sealed class CollectionSample : MonoBehaviour
     {
         Clean();
     }
+    private void OnDestroy()
+    {
+        CollectionPool.CleanImpl();
+    }
 
     #region Test List
     private void Test_List_Add()
@@ -102,7 +107,7 @@ public sealed class CollectionSample : MonoBehaviour
         HelperListAdd();
         int index = _random.GetInt32(0, GetListCount());
         _sysList.InsertRange(index, _helpList);
-        _eveList.InsertRange0GC(index, _helpList);
+        _eveList.InsertRangeLowGC(index, _helpList);
 
         Test_List();
     }
@@ -138,7 +143,7 @@ public sealed class CollectionSample : MonoBehaviour
             int index = _random.GetInt32(0, GetListCount());
             int count = _random.GetInt32(0, GetListCount() - index);
 
-            _eveList.Update0GC(_sysList);
+            _eveList.UpdateLowGC(_sysList);
             _sysList.RemoveRange(index, count);
             _eveList.RemoveRange(index, count);
         }
@@ -150,7 +155,7 @@ public sealed class CollectionSample : MonoBehaviour
         if (_sysList.Count != _eveList.Count)
             throw new Exception($"_sysList.Count:{_sysList.Count} != _eveList.Count:{_eveList.Count}");
 
-        _helpList.Update0GC(_sysList);
+        _helpList.UpdateLowGC(_sysList);
 
         foreach (int item in _eveList)
             if (!_helpList.Remove(item))
@@ -277,8 +282,8 @@ public sealed class CollectionSample : MonoBehaviour
     private void Test_Set_HelperList_AddOrRemove(bool addOrRemove)
     {
         _helpList.Clear();
-        _helpList.AddRange0GC(_sysSet);
-        _helpList.AddRange0GC(_eveSet);
+        _helpList.AddRangeLowGC(_sysSet);
+        _helpList.AddRangeLowGC(_eveSet);
 
         if (addOrRemove)
             for (int times = RandomTimes(), i = 0; i < times; ++i)
@@ -357,7 +362,7 @@ public sealed class CollectionSample : MonoBehaviour
         if (!_eveDic.CheckEquals())
             ExceptionDic(nameof(Test_Dic));
 
-        _helpDic.Update0GC(_eveDic);
+        _helpDic.UpdateLowGC(_eveDic);
         foreach (var pair in _sysDic)
         {
             if (_helpDic.Remove(pair.Key, out int value) && pair.Value == value)
@@ -367,7 +372,7 @@ public sealed class CollectionSample : MonoBehaviour
         if (!_helpDic.IsEmpty())
             ExceptionDic(nameof(Test_Dic));
 
-        _helpDic.Update0GC(_sysDic);
+        _helpDic.UpdateLowGC(_sysDic);
         foreach (var pair in _eveDic)
         {
             if (_helpDic.Remove(pair.Key, out int value) && pair.Value == value)

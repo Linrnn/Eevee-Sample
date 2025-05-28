@@ -194,7 +194,7 @@ internal sealed class MathSample : UnityEngine.MonoBehaviour
                 LogRelay.Error($"[Sample] Transpose Diff:{diffTranspose} not 0.");
 
             bool bInverse = matrix4X40.Inverse(out var fInverse);
-            bool sInverse = SMatrix4x4.Invert((SMatrix4x4)matrix4X40, out var sInvert);
+            bool _ = SMatrix4x4.Invert((SMatrix4x4)matrix4X40, out var sInvert);
             //var diffInverse = fInverse - UMatrix4x4.Inverse((UMatrix4x4)matrix4X40);
             var diffInverse = bInverse ? fInverse - sInvert : default;
             if (bInverse && diffInverse.SqrMagnitude() >= _epsilon0001)

@@ -1,4 +1,4 @@
-﻿using Box2DSharp.Common;
+﻿//using Box2DSharp.Common;
 using Eevee.Diagnosis;
 using Eevee.Fixed;
 using Eevee.Random;
@@ -40,15 +40,15 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
     private readonly List<long> _numbers = new();
     private readonly List<double> _systemRad = new();
-    private readonly List<FP> _systemOne = new();
+    //private readonly List<FP> _systemOne = new();
     private readonly List<Fixed64> _fixed64BigNumbers = new();
-    private readonly List<FP> _fpBigNumbers = new();
+    //private readonly List<FP> _fpBigNumbers = new();
     private readonly List<Fixed64> _fixed64SmallNumbers = new();
-    private readonly List<FP> _fpSmallNumbers = new();
+    //private readonly List<FP> _fpSmallNumbers = new();
     private readonly List<Fixed64> _fixed64Rad = new();
-    private readonly List<FP> _fpRad = new();
+    //private readonly List<FP> _fpRad = new();
     private readonly List<Fixed64> _fixed64One = new();
-    private readonly List<FP> _fpOne = new();
+    //private readonly List<FP> _fpOne = new();
     #endregion
 
     #region 生命周期/赋值
@@ -88,25 +88,25 @@ internal sealed class Fixed64Sample : MonoBehaviour
         for (double value = -500; value <= 500; value += 0.015625)
             _systemRad.Add(value);
 
-        _systemOne.Clear();
-        for (double value = -1; value <= 1; value += 0.015625)
-            _systemOne.Add(value);
+        //_systemOne.Clear();
+        //for (double value = -1; value <= 1; value += 0.015625)
+        //    _systemOne.Add(value);
 
         _fixed64Rad.Clear();
         for (Fixed64 value = -500; value <= 500; value += 0.015625)
             _fixed64Rad.Add(value);
 
-        _fpRad.Clear();
-        for (FP value = -500; value <= 500; value += 0.015625)
-            _fpRad.Add(value);
+        //_fpRad.Clear();
+        //for (FP value = -500; value <= 500; value += 0.015625)
+        //    _fpRad.Add(value);
 
         _fixed64One.Clear();
         for (var value = -Fixed64.One; value <= Fixed64.One; value += 0.015625)
             _fixed64One.Add(value);
 
-        _fpOne.Clear();
-        for (var value = -FP.One; value <= FP.One; value += 0.015625)
-            _fpOne.Add(value);
+        //_fpOne.Clear();
+        //for (var value = -FP.One; value <= FP.One; value += 0.015625)
+        //    _fpOne.Add(value);
     }
     private void Random()
     {
@@ -115,9 +115,9 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
         _numbers.Clear();
         _fixed64BigNumbers.Clear();
-        _fpBigNumbers.Clear();
+        //_fpBigNumbers.Clear();
         _fixed64SmallNumbers.Clear();
-        _fpSmallNumbers.Clear();
+        //_fpSmallNumbers.Clear();
 
         for (int i = 0; i < count >> 1; ++i)
             _numbers.Add(_random.GetInt32(0, short.MaxValue));
@@ -135,9 +135,9 @@ internal sealed class Fixed64Sample : MonoBehaviour
             long rawValue = ((sign ? number : -number) << 32) + (sign ? 1L : -1L);
 
             _fixed64BigNumbers.Add(number);
-            _fpBigNumbers.Add(number);
+            //_fpBigNumbers.Add(number);
             _fixed64SmallNumbers.Add(new Fixed64(rawValue));
-            _fpSmallNumbers.Add(FP.FromRaw(rawValue));
+            //_fpSmallNumbers.Add(FP.FromRaw(rawValue));
         }
     }
     #endregion
@@ -153,10 +153,10 @@ internal sealed class Fixed64Sample : MonoBehaviour
             _ = _fixed64BigNumbers[i].Abs();
         Profiler.EndSample();
 
-        Profiler.BeginSample("Fixed64Sample.Abs FP");
-        for (int i = 0; i < _absTimes; ++i)
-            FP.Abs(_fpBigNumbers[i]);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Abs FP");
+        //for (int i = 0; i < _absTimes; ++i)
+        //    FP.Abs(_fpBigNumbers[i]);
+        //Profiler.EndSample();
     }
     private void Sqrt()
     {
@@ -184,10 +184,10 @@ internal sealed class Fixed64Sample : MonoBehaviour
             _fixed64BigNumbers[i].Sqrt();
         Profiler.EndSample();
 
-        Profiler.BeginSample("Fixed64Sample.Sqrt FP");
-        for (int i = 0; i < _sqrtTimes; ++i)
-            FP.Sqrt(_fpBigNumbers[i]);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Sqrt FP");
+        //for (int i = 0; i < _sqrtTimes; ++i)
+        //    FP.Sqrt(_fpBigNumbers[i]);
+        //Profiler.EndSample();
     }
     private void Mul()
     {
@@ -199,10 +199,10 @@ internal sealed class Fixed64Sample : MonoBehaviour
             _ = _fixed64SmallNumbers[i] * _fixed64SmallNumbers[i];
         Profiler.EndSample();
 
-        Profiler.BeginSample("Fixed64Sample.Mul FP");
-        for (int i = 0; i < _mulTimes; ++i)
-            _ = _fpSmallNumbers[i] * _fpSmallNumbers[i];
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Mul FP");
+        //for (int i = 0; i < _mulTimes; ++i)
+        //    _ = _fpSmallNumbers[i] * _fpSmallNumbers[i];
+        //Profiler.EndSample();
     }
     private void Div()
     {
@@ -225,10 +225,10 @@ internal sealed class Fixed64Sample : MonoBehaviour
             _ = _fixed64SmallNumbers[i] / _fixed64SmallNumbers[i + 1];
         Profiler.EndSample();
 
-        Profiler.BeginSample("Fixed64Sample.Div FP");
-        for (int count = Math.Min(_fpSmallNumbers.Count - 1, _divTimes), i = 0; i < count; ++i)
-            _ = _fpSmallNumbers[i] / _fpSmallNumbers[i + 1];
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Div FP");
+        //for (int count = Math.Min(_fpSmallNumbers.Count - 1, _divTimes), i = 0; i < count; ++i)
+        //    _ = _fpSmallNumbers[i] / _fpSmallNumbers[i + 1];
+        //Profiler.EndSample();
     }
     #endregion
 
@@ -263,15 +263,15 @@ internal sealed class Fixed64Sample : MonoBehaviour
             Math.Sin(rad);
         Profiler.EndSample();
 
-        Profiler.BeginSample("Fixed64Sample.Sin Rad FP");
-        foreach (var rad in _fpRad)
-            FP.Sin(rad);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Sin Rad FP");
+        //foreach (var rad in _fpRad)
+        //    FP.Sin(rad);
+        //Profiler.EndSample();
 
-        Profiler.BeginSample("Fixed64Sample.Sin Slow Rad FP");
-        foreach (var rad in _fpRad)
-            FP.SlowSin(rad);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Sin Slow Rad FP");
+        //foreach (var rad in _fpRad)
+        //    FP.SlowSin(rad);
+        //Profiler.EndSample();
 
         Profiler.BeginSample("Fixed64Sample.Sin Rad Fixed64");
         foreach (var rad in _fixed64Rad)
@@ -349,11 +349,11 @@ internal sealed class Fixed64Sample : MonoBehaviour
             Math.Tan(rad);
         Profiler.EndSample();
 
-        Profiler.BeginSample("Fixed64Sample.Tan Rad FP");
-        foreach (var rad in _fpRad)
-            if (FP.Cos(rad) != FP.Zero)
-                FP.Tan(rad);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Tan Rad FP");
+        //foreach (var rad in _fpRad)
+        //    if (FP.Cos(rad) != FP.Zero)
+        //        FP.Tan(rad);
+        //Profiler.EndSample();
 
         Profiler.BeginSample("Fixed64Sample.Tan Rad Fixed64");
         foreach (var rad in _fixed64Rad)
@@ -431,15 +431,15 @@ internal sealed class Fixed64Sample : MonoBehaviour
                 LogRelay.Error($"[Sample] fAsin:{fAsin}, sAsin:{sAsin:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
 
-        Profiler.BeginSample("Fixed64Sample.ASin System");
-        foreach (var value in _systemOne)
-            Math.Asin(value.AsDouble);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.ASin System");
+        //foreach (var value in _systemOne)
+        //    Math.Asin(value.AsDouble);
+        //Profiler.EndSample();
 
-        Profiler.BeginSample("Fixed64Sample.ASin FP");
-        foreach (var value in _fpOne)
-            FP.Asin(value);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.ASin FP");
+        //foreach (var value in _fpOne)
+        //    FP.Asin(value);
+        //Profiler.EndSample();
 
         Profiler.BeginSample("Fixed64Sample.ASin Fixed64");
         foreach (var value in _fixed64One)
@@ -526,15 +526,15 @@ internal sealed class Fixed64Sample : MonoBehaviour
                 LogRelay.Error($"[Sample] fAtan2:{fAtan2}, sAtan2:{sAtan2:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
 
-        Profiler.BeginSample("Fixed64Sample.Atan2 System");
-        foreach (var value in _systemOne)
-            Math.Atan2(value.AsDouble, 1D);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Atan2 System");
+        //foreach (var value in _systemOne)
+        //    Math.Atan2(value.AsDouble, 1D);
+        //Profiler.EndSample();
 
-        Profiler.BeginSample("Fixed64Sample.Atan2 FP");
-        foreach (var value in _fpOne)
-            FP.Atan2(value, FP.One);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Atan2 FP");
+        //foreach (var value in _fpOne)
+        //    FP.Atan2(value, FP.One);
+        //Profiler.EndSample();
 
         Profiler.BeginSample("Fixed64Sample.Atan2 Fixed64");
         foreach (var value in _fixed64One)
@@ -590,15 +590,15 @@ internal sealed class Fixed64Sample : MonoBehaviour
                 LogRelay.Error($"[Sample] fPow2:{fPow2}, sPow2:{sPow2:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, exp:{exp}");
         }
 
-        Profiler.BeginSample("Fixed64Sample.Pow2 System");
-        foreach (var value in _systemOne)
-            Math.Pow(2, value.AsDouble);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Pow2 System");
+        //foreach (var value in _systemOne)
+        //    Math.Pow(2, value.AsDouble);
+        //Profiler.EndSample();
 
-        Profiler.BeginSample("Fixed64Sample.Pow2 FP");
-        foreach (var value in _fpOne)
-            FP.Pow(2, value);
-        Profiler.EndSample();
+        //Profiler.BeginSample("Fixed64Sample.Pow2 FP");
+        //foreach (var value in _fpOne)
+        //    FP.Pow(2, value);
+        //Profiler.EndSample();
 
         Profiler.BeginSample("Fixed64Sample.Pow2 Fixed64");
         foreach (var value in _fixed64One)
