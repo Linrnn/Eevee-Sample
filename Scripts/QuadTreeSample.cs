@@ -1,0 +1,314 @@
+﻿using Eevee.Diagnosis;
+using Eevee.Fixed;
+using Eevee.QuadTree;
+using Eevee.Utils;
+using EeveeEditor;
+using EeveeEditor.QuadTree;
+using System;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+using SRandom = System.Random;
+
+/// <summary>
+/// 四叉树示例代码
+/// </summary>
+public sealed class QuadTreeSample : MonoBehaviour
+{
+    #region 类型
+    [Serializable]
+    private struct RandomWeight
+    {
+        private interface IWeight
+        {
+            int GetWeight();
+        }
+
+        [Serializable]
+        private struct ShapeWeight : IWeight
+        {
+            [SerializeField] internal QuadShape Shape;
+            [SerializeField] internal int Weight;
+            public int GetWeight() => Weight;
+
+            [CustomPropertyDrawer(typeof(ShapeWeight))]
+            private sealed class ShapeWeightDrawer : PropertyDrawer
+            {
+                private const int HeightScale = 2;
+                public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+                {
+                    var size = new Vector2(position.size.x, position.size.y / HeightScale);
+                    var shapeProperty = property.FindPropertyRelative(nameof(Shape));
+                    var weightProperty = property.FindPropertyRelative(nameof(Weight));
+                    var shapePosition = new Rect(position.position, size);
+                    var weightPosition = new Rect(position.x, position.y + size.y, size.x, size.y);
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUI.PropertyField(shapePosition, shapeProperty);
+                    EditorGUI.PropertyField(weightPosition, weightProperty);
+                    EditorGUILayout.EndHorizontal();
+                }
+                public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => base.GetPropertyHeight(property, label) * HeightScale;
+            }
+        }
+
+        [Serializable]
+        private struct OperateWeight : IWeight
+        {
+            [SerializeField] internal ElementOperate Operate;
+            [SerializeField] internal int Weight;
+            public int GetWeight() => Weight;
+
+            [CustomPropertyDrawer(typeof(OperateWeight))]
+            private sealed class OperateWeightWeightDrawer : PropertyDrawer
+            {
+                private const int HeightScale = 2;
+                public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+                {
+                    var size = new Vector2(position.size.x, position.size.y / HeightScale);
+                    var operateProperty = property.FindPropertyRelative(nameof(Operate));
+                    var weightProperty = property.FindPropertyRelative(nameof(Weight));
+                    var operatePosition = new Rect(position.position, size);
+                    var weightPosition = new Rect(position.x, position.y + size.y, size.x, size.y);
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUI.PropertyField(operatePosition, operateProperty);
+                    EditorGUI.PropertyField(weightPosition, weightProperty);
+                    EditorGUILayout.EndHorizontal();
+                }
+                public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => base.GetPropertyHeight(property, label) * HeightScale;
+            }
+        }
+
+        [SerializeField] private ShapeWeight[] _shapeWeights;
+        [SerializeField] private OperateWeight[] _operateWeights;
+        internal SRandom Random;
+
+        internal QuadShape GetShape() => Get(_shapeWeights).Shape;
+        internal ElementOperate GetOperate() => Get(_operateWeights).Operate;
+        private T Get<T>(T[] weights) where T : IWeight
+        {
+            int sum = 0;
+            foreach (var weight in weights)
+                sum += weight.GetWeight();
+
+            int next = Random.Next(0, sum);
+            int value = next;
+            foreach (var weight in weights)
+                if (value <= weight.GetWeight())
+                    return weight;
+                else
+                    value -= weight.GetWeight();
+
+            return default;
+        }
+    }
+
+    private sealed class SampleQuadDrawProxy : IQuadDrawProxy
+    {
+        public QuadTreeManager Manager => _quadTreeManager;
+        public Color GetElementColor(int treeId) => treeId switch
+        {
+            (int)QuadFunc.Unit => Color.black,
+            (int)QuadFunc.GuardBox => Color.red,
+            (int)QuadFunc.Shop => Color.cyan,
+            (int)QuadFunc.Item => Color.green,
+            (int)QuadFunc.GuardArea => Color.yellow,
+            (int)QuadFunc.Region => Color.gray,
+            _ => Color.white,
+        };
+        public int GetIndex(GameObject go)
+        {
+            // todo eevee NotImplementedException
+            throw new NotImplementedException();
+        }
+        public void GetIndexes(GameObject go, ICollection<int> indexes)
+        {
+            // todo eevee NotImplementedException
+            throw new NotImplementedException();
+        }
+    }
+
+    private readonly struct QuadRuntime
+    {
+        private readonly QuadFunc _func;
+        private readonly Vector2DInt _lastPosition;
+        internal readonly AABB2DInt Shape;
+        internal QuadRuntime(int treeId, in AABB2DInt shape)
+        {
+            _func = (QuadFunc)treeId;
+            _lastPosition = shape.Center();
+            Shape = shape;
+        }
+        internal QuadRuntime(int treeId, Vector2DInt lastPosition, in AABB2DInt shape)
+        {
+            _func = (QuadFunc)treeId;
+            _lastPosition = lastPosition;
+            Shape = shape;
+        }
+        internal int TreeId() => (int)_func;
+        internal Vector2DInt Direction() => Shape.Center() - _lastPosition;
+    }
+
+    private enum QuadFunc
+    {
+        None,
+        Unit,
+        GuardBox,
+        Shop,
+        Item,
+        GuardArea,
+        Region,
+    }
+
+    private enum ElementOperate
+    {
+        None,
+        Insert,
+        Remove,
+    }
+    #endregion
+
+    #region 序列化字段
+    [Header("随机权重")] [SerializeField] private RandomWeight _randomWeight;
+
+    [Header("四叉树配置")] [SerializeField] private int _scale;
+    [SerializeField] private int _depthCount;
+    [SerializeField] private Vector2DInt _center;
+    [SerializeField] private Vector2DInt _extents;
+
+    [Header("运行时数据")] [SerializeField] private int _seed;
+    [SerializeField] private int _countLimit;
+    [SerializeField] private Vector2 _speedRange;
+    [SerializeField] private bool _removeEmptyNode;
+    [ReadOnly] [SerializeField] private int _indexCount;
+    #endregion
+
+    #region 运行时缓存
+    private SRandom _random;
+    private List<QuadTreeConfig> _configs;
+    private Dictionary<int, QuadRuntime> _runtime;
+    private List<int> _indexes;
+    private HashSet<int> _indexCheck;
+    private static QuadTreeManager _quadTreeManager;
+    #endregion
+
+    private void OnEnable()
+    {
+        var random = new SRandom(_seed);
+        var configs = new List<QuadTreeConfig>();
+
+        configs.Add(QuadTreeConfig.Build<DynamicQuadTree>((int)QuadFunc.Unit, QuadShape.Circle, new Vector2DInt(64, 64)));
+        configs.Add(QuadTreeConfig.Build<DynamicQuadTree>((int)QuadFunc.GuardBox, QuadShape.AABB, new Vector2DInt(64, 64)));
+        configs.Add(QuadTreeConfig.Build<MeshQuadTree>((int)QuadFunc.Shop, QuadShape.Circle, new Vector2DInt(512, 512)));
+        configs.Add(QuadTreeConfig.Build<MeshQuadTree>((int)QuadFunc.Item, QuadShape.AABB, new Vector2DInt(16, 16)));
+        configs.Add(QuadTreeConfig.Build<LooseQuadTree>((int)QuadFunc.GuardArea, QuadShape.Circle, new Vector2DInt(1024, 1024)));
+        configs.Add(QuadTreeConfig.Build<LooseQuadTree>((int)QuadFunc.Region, QuadShape.AABB, new Vector2DInt(256, 256)));
+
+        _randomWeight.Random = random;
+        _random = random;
+        _configs = configs;
+        _runtime = new Dictionary<int, QuadRuntime>();
+        _indexes = new List<int>();
+        _indexCheck = new HashSet<int>();
+        _quadTreeManager = new QuadTreeManager(_scale, _depthCount, new AABB2DInt(_center, _extents), _configs);
+    }
+    private void FixedUpdate()
+    {
+        _indexCheck.Clear();
+        foreach (var pair in _runtime)
+            _indexCheck.Add(pair.Key);
+        if (!_indexCheck.SetEquals(_indexes))
+            Debug.LogError("索引列表和运行时数据不一致！");
+
+        var operate = _randomWeight.GetOperate();
+        switch (operate)
+        {
+            case ElementOperate.Insert:
+                if (_indexes.Count < _countLimit)
+                    QuadInsert();
+                break;
+            case ElementOperate.Remove: QuadRemove(); break;
+        }
+
+        QuadUpdate();
+
+        if (_removeEmptyNode)
+            _quadTreeManager.RemoveEmptyNode();
+        _indexCount = _indexes.Count;
+    }
+    private void OnDisable()
+    {
+        LogProxy.Inject(new UnityLog());
+        _quadTreeManager.Clean();
+        _quadTreeManager = null;
+    }
+
+    private void QuadInsert()
+    {
+        var boundary = _quadTreeManager.MaxBoundary;
+        int index = _indexes.Count > 0 ? _indexes[^1] + 1 : 1;
+        var config = _configs[_random.Next(0, _configs.Count)];
+        int width = _random.Next(config.Extents.X >> 1, config.Extents.X << 2);
+        int height = _random.Next(config.Extents.Y >> 1, config.Extents.Y << 2);
+        int cx = _random.Next(boundary.Left() + width, boundary.Right() - width);
+        int cy = _random.Next(boundary.Bottom() + height, boundary.Top() - height);
+        var shape = config.Shape is QuadShape.Circle ? new AABB2DInt(cx, cy, Math.Min(width, height)) : new AABB2DInt(cx, cy, width, height);
+
+        _quadTreeManager.Insert(config.TreeId, index, in shape);
+        _runtime.Add(index, new QuadRuntime(config.TreeId, in shape));
+        _indexes.Add(index);
+        _indexes.Sort();
+    }
+    private void QuadUpdate()
+    {
+        foreach (int index in _indexes)
+        {
+            var runtime = _runtime[index];
+            float speed = _speedRange.x + (float)_random.NextDouble() * (_speedRange.y - _speedRange.x);
+
+            if (runtime.Direction() is { } direction && direction != default)
+            {
+                var dir = (Vector2D)direction;
+                var offset = dir.ScaleMagnitude(speed);
+                if (ChangePosition(index, in runtime, (Vector2DInt)offset))
+                    continue;
+            }
+
+            while (true)
+            {
+                float rad = (float)_random.NextDouble() * MathF.PI * 2;
+                var offset = new Vector2(MathF.Sin(rad), MathF.Cos(rad)) * speed;
+                if (ChangePosition(index, in runtime, (Vector2DInt)offset))
+                    break;
+            }
+        }
+    }
+    private void QuadRemove()
+    {
+        if (_indexes.Count == 0)
+            return;
+
+        int idx = _random.Next(0, _indexes.Count);
+        int index = _indexes[idx];
+        var runtime = _runtime[index];
+
+        _quadTreeManager.Remove(runtime.TreeId(), index, in runtime.Shape);
+        _runtime.Remove(index);
+        _indexes.RemoveAt(idx);
+    }
+
+    private bool ChangePosition(int index, in QuadRuntime runtime, Vector2DInt offset)
+    {
+        var oldPosition = runtime.Shape.Center();
+        var newPosition = oldPosition + offset;
+        var extents = runtime.Shape.HalfSize();
+        var shape = new AABB2DInt(newPosition, extents);
+        if (!Geometry.Contain(in _quadTreeManager.MaxBoundary, in shape))
+            return false;
+
+        _quadTreeManager.Update(runtime.TreeId(), index, new Change<Vector2DInt>(oldPosition, newPosition), extents);
+        _runtime[index] = new QuadRuntime(runtime.TreeId(), oldPosition, new AABB2DInt(newPosition, extents));
+        return true;
+    }
+}

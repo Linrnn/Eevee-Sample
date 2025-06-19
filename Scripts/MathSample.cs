@@ -56,7 +56,7 @@ internal sealed class MathSample : UnityEngine.MonoBehaviour
             var quaternion2 = (Quaternion)URandom.rotation;
             var rect0 = new Rectangle(in vec2D0, in vec2D2);
             var rect1 = new Rectangle(in vec2D2, in vec2D0);
-            var ray3D0 = new Ray3D(in vec3D0, in vec3D1);
+            var ray3D0 = new Ray3D(in vec3D0, vec3D1.Normalized());
             var plane0 = new Plane(in vec3D0, num2);
             var plane1 = new Plane(in Vector3D.Up, Fixed64.Zero);
             var matrix4X40 = new Matrix4X4(in vec4D10, in vec4D11, in vec4D12, in vec4D13);

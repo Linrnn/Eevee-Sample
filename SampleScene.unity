@@ -423,6 +423,164 @@ MonoBehaviour:
     _order:
       _items: 
       _size: 0
+--- !u!1 &898140556
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 898140558}
+  - component: {fileID: 898140557}
+  - component: {fileID: 898140561}
+  - component: {fileID: 898140560}
+  - component: {fileID: 898140563}
+  - component: {fileID: 898140562}
+  m_Layer: 0
+  m_Name: "\u56DB\u53C9\u6811\u793A\u4F8B"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &898140557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898140556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05f9f473d177c754ca94579cd4c13a30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp-firstpass::QuadTreeSample
+  _randomWeight:
+    _shapeWeights:
+    - Shape: 1
+      Weight: 20
+    - Shape: 2
+      Weight: 80
+    _operateWeights:
+    - Operate: 0
+      Weight: 60
+    - Operate: 1
+      Weight: 30
+    - Operate: 2
+      Weight: 10
+  _scale: 128
+  _depthCount: 8
+  _center:
+    X: 1280
+    Y: -2560
+  _extents:
+    X: 9000
+    Y: 7000
+  _seed: 10
+  _countLimit: 3000
+  _speedRange: {x: 60, y: 120}
+  _removeEmptyNode: 0
+  _indexCount: 0
+--- !u!4 &898140558
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898140556}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &898140560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898140556}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6014a8d12311a5479273844a7dffd94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorDrawQuadElement
+  _circleAccuracy: 12
+  _drawRange: 3
+  _treeIds: 03000000
+  _height: 0
+  _draw: 1
+  _elements: []
+--- !u!114 &898140561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898140556}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a731cfe77982a0948b071cd370191206, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorDrawQuadCountElement
+  _treeIds: 010000000400000006000000
+  _drawLineBall: 0
+  _height: 1
+  _depthCounts: []
+--- !u!114 &898140562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898140556}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e85b4f7d38f16cc41bd8c47c45bbc404, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorDrawQuadTree
+  _treeId: 3
+  _indexes: 
+  _emptyNode:
+    Show: 0
+    Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _normalNode:
+    Show: 1
+    Color: {r: 0, g: 1, b: 0, a: 1}
+  _rootNode:
+    Show: 0
+    Color: {r: 1, g: 0, b: 0, a: 1}
+  _looseColor: {r: 1, g: 0, b: 1, a: 1}
+  _boundaryColor: {r: 0, g: 0, b: 1, a: 1}
+  _shapeColor: {r: 0, g: 0, b: 0, a: 1}
+  _circleAccuracy: 12
+  _height: 0
+--- !u!114 &898140563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898140556}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dd8a9e15c684ea48a9f9ac75aea533d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorDrawQuadQuery
+  _quadShape: 1
+  _position: {x: 0, y: 0}
+  _radius: 1
+  _circleAccuracy: 12
+  _extents: {x: 1, y: 1}
+  _angle: 0
+  _treeId: 1
+  _height: 0
+  _color: {r: 0, g: 0, b: 1, a: 1}
+  _queries: 
 --- !u!1 &1579350787
 GameObject:
   m_ObjectHideFlags: 0
@@ -535,3 +693,4 @@ SceneRoots:
   - {fileID: 1579350789}
   - {fileID: 802131707}
   - {fileID: 279509877}
+  - {fileID: 898140558}
