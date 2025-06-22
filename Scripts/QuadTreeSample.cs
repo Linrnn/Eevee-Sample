@@ -29,7 +29,7 @@ public sealed class QuadTreeSample : MonoBehaviour
         {
             [SerializeField] internal QuadShape Shape;
             [SerializeField] internal int Weight;
-            public int GetWeight() => Weight;
+            public readonly int GetWeight() => Weight;
 
             [CustomPropertyDrawer(typeof(ShapeWeight))]
             private sealed class ShapeWeightDrawer : PropertyDrawer
@@ -37,9 +37,10 @@ public sealed class QuadTreeSample : MonoBehaviour
                 private const int HeightScale = 2;
                 public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
                 {
-                    var size = new Vector2(position.size.x, position.size.y / HeightScale);
                     var shapeProperty = property.FindPropertyRelative(nameof(Shape));
                     var weightProperty = property.FindPropertyRelative(nameof(Weight));
+
+                    var size = new Vector2(position.size.x, position.size.y / HeightScale);
                     var shapePosition = new Rect(position.position, size);
                     var weightPosition = new Rect(position.x, position.y + size.y, size.x, size.y);
 
@@ -47,6 +48,9 @@ public sealed class QuadTreeSample : MonoBehaviour
                     EditorGUI.PropertyField(shapePosition, shapeProperty);
                     EditorGUI.PropertyField(weightPosition, weightProperty);
                     EditorGUILayout.EndHorizontal();
+
+                    shapeProperty.Dispose();
+                    weightProperty.Dispose();
                 }
                 public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => base.GetPropertyHeight(property, label) * HeightScale;
             }
@@ -57,7 +61,7 @@ public sealed class QuadTreeSample : MonoBehaviour
         {
             [SerializeField] internal ElementOperate Operate;
             [SerializeField] internal int Weight;
-            public int GetWeight() => Weight;
+            public readonly int GetWeight() => Weight;
 
             [CustomPropertyDrawer(typeof(OperateWeight))]
             private sealed class OperateWeightWeightDrawer : PropertyDrawer
@@ -65,9 +69,10 @@ public sealed class QuadTreeSample : MonoBehaviour
                 private const int HeightScale = 2;
                 public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
                 {
-                    var size = new Vector2(position.size.x, position.size.y / HeightScale);
                     var operateProperty = property.FindPropertyRelative(nameof(Operate));
                     var weightProperty = property.FindPropertyRelative(nameof(Weight));
+
+                    var size = new Vector2(position.size.x, position.size.y / HeightScale);
                     var operatePosition = new Rect(position.position, size);
                     var weightPosition = new Rect(position.x, position.y + size.y, size.x, size.y);
 
@@ -75,6 +80,9 @@ public sealed class QuadTreeSample : MonoBehaviour
                     EditorGUI.PropertyField(operatePosition, operateProperty);
                     EditorGUI.PropertyField(weightPosition, weightProperty);
                     EditorGUILayout.EndHorizontal();
+
+                    operateProperty.Dispose();
+                    weightProperty.Dispose();
                 }
                 public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => base.GetPropertyHeight(property, label) * HeightScale;
             }
@@ -84,9 +92,9 @@ public sealed class QuadTreeSample : MonoBehaviour
         [SerializeField] private OperateWeight[] _operateWeights;
         internal SRandom Random;
 
-        internal QuadShape GetShape() => Get(_shapeWeights).Shape;
-        internal ElementOperate GetOperate() => Get(_operateWeights).Operate;
-        private T Get<T>(T[] weights) where T : IWeight
+        internal readonly QuadShape GetShape() => Get(_shapeWeights).Shape;
+        internal readonly ElementOperate GetOperate() => Get(_operateWeights).Operate;
+        private readonly T Get<T>(T[] weights) where T : IWeight
         {
             int sum = 0;
             foreach (var weight in weights)
@@ -119,13 +127,14 @@ public sealed class QuadTreeSample : MonoBehaviour
         };
         public int GetIndex(GameObject go)
         {
-            // todo eevee NotImplementedException
-            throw new NotImplementedException();
+            var entity = go.GetComponent<QuadEntity>();
+            return entity.Index;
         }
         public void GetIndexes(GameObject go, ICollection<int> indexes)
         {
-            // todo eevee NotImplementedException
-            throw new NotImplementedException();
+            var entities = go.GetComponentsInChildren<QuadEntity>();
+            foreach (var entity in entities)
+                indexes.Add(entity.Index);
         }
     }
 
@@ -189,7 +198,6 @@ public sealed class QuadTreeSample : MonoBehaviour
     private List<QuadTreeConfig> _configs;
     private Dictionary<int, QuadRuntime> _runtime;
     private List<int> _indexes;
-    private HashSet<int> _indexCheck;
     private static QuadTreeManager _quadTreeManager;
     #endregion
 
@@ -210,17 +218,10 @@ public sealed class QuadTreeSample : MonoBehaviour
         _configs = configs;
         _runtime = new Dictionary<int, QuadRuntime>();
         _indexes = new List<int>();
-        _indexCheck = new HashSet<int>();
         _quadTreeManager = new QuadTreeManager(_scale, _depthCount, new AABB2DInt(_center, _extents), _configs);
     }
-    private void FixedUpdate()
+    private void Update()
     {
-        _indexCheck.Clear();
-        foreach (var pair in _runtime)
-            _indexCheck.Add(pair.Key);
-        if (!_indexCheck.SetEquals(_indexes))
-            Debug.LogError("索引列表和运行时数据不一致！");
-
         var operate = _randomWeight.GetOperate();
         switch (operate)
         {
@@ -258,7 +259,7 @@ public sealed class QuadTreeSample : MonoBehaviour
         _quadTreeManager.Insert(config.TreeId, index, in shape);
         _runtime.Add(index, new QuadRuntime(config.TreeId, in shape));
         _indexes.Add(index);
-        _indexes.Sort();
+        _indexes.Sort(Comparer.Int);
     }
     private void QuadUpdate()
     {

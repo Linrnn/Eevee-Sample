@@ -1,5 +1,6 @@
 ﻿using Eevee.Event;
 using System;
+using System.Buffers;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -110,8 +111,8 @@ internal sealed class EventSample : MonoBehaviour
 
     private readonly ClassContext _context = new(2);
 
-    private readonly EventModule _emailEventModule = new();
-    private readonly EventModule _loginEventModule = new();
+    private readonly EventModule _emailEventModule = new(ArrayPool<Delegate>.Shared);
+    private readonly EventModule _loginEventModule = new(ArrayPool<Delegate>.Shared);
 
     [SerializeField] private HeroPanel _heroPanel = new(); // 在监视面板查看结果
     [SerializeField] private ItemPanel _itemPanel = new(); // 在监视面板查看结果
