@@ -1,5 +1,4 @@
 ﻿//using Box2DSharp.Common;
-using Eevee.Diagnosis;
 using Eevee.Fixed;
 using Eevee.Random;
 using System;
@@ -171,7 +170,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fSqrt - sSqrt));
             if (diff >= 1)
-                LogRelay.Error($"[Sample] fSqrt:{fSqrt}, sSqrt:{sSqrt:0.######}, diff:{diff:0.#######} >= 1, number:{number}");
+                Debug.LogError($"[Sample] fSqrt:{fSqrt}, sSqrt:{sSqrt:0.######}, diff:{diff:0.#######} >= 1, number:{number}");
         }
 
         Profiler.BeginSample("Fixed64Sample.Sqrt System");
@@ -217,7 +216,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
             var sDiv = (Fixed64)((decimal)left / (decimal)right);
 
             if (fDiv != sDiv)
-                LogRelay.Error($"[Sample] fDiv:{fDiv} != sDiv:{sDiv}, left:{left}, right:{right}");
+                Debug.LogError($"[Sample] fDiv:{fDiv} != sDiv:{sDiv}, left:{left}, right:{right}");
         }
 
         Profiler.BeginSample("Fixed64Sample.Div Fixed64");
@@ -245,7 +244,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fSin - sSin));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fSin:{fSin}, sSin:{sSin:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, rad:{rad}");
+                Debug.LogError($"[Sample] fSin:{fSin}, sSin:{sSin:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, rad:{rad}");
         }
 
         foreach (var deg in _fixed64Rad)
@@ -255,7 +254,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fSin - sSin));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fSin:{fSin}, sSin:{sSin:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, deg:{deg}");
+                Debug.LogError($"[Sample] fSin:{fSin}, sSin:{sSin:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, deg:{deg}");
         }
 
         Profiler.BeginSample("Fixed64Sample.Sin Rad System");
@@ -295,7 +294,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fCos - sCos));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] cos0:{fCos}, sCos:{sCos:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, rad:{rad}");
+                Debug.LogError($"[Sample] cos0:{fCos}, sCos:{sCos:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, rad:{rad}");
         }
 
         foreach (var deg in _fixed64Rad)
@@ -305,7 +304,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fCos - sCos));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fCos:{fCos}, sCos:{sCos:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, deg:{deg}");
+                Debug.LogError($"[Sample] fCos:{fCos}, sCos:{sCos:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, deg:{deg}");
         }
     }
     private void Tan()
@@ -325,7 +324,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fTan - sTan));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fTan:{fTan}, sTan:{sTan:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, rad:{rad}");
+                Debug.LogError($"[Sample] fTan:{fTan}, sTan:{sTan:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, rad:{rad}");
         }
 
         foreach (var deg in _fixed64Rad)
@@ -341,7 +340,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fTan - sTan));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fTan:{fTan:0.000}, sTan:{sTan:0.000}, diff:{diff:0.000} >= {Epsilon}, deg:{deg}");
+                Debug.LogError($"[Sample] fTan:{fTan:0.000}, sTan:{sTan:0.000}, diff:{diff:0.000} >= {Epsilon}, deg:{deg}");
         }
 
         Profiler.BeginSample("Fixed64Sample.Tan Rad System");
@@ -384,7 +383,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fCot - sCot));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fCot:{fCot}, sCot:{sCot:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, rad:{rad}");
+                Debug.LogError($"[Sample] fCot:{fCot}, sCot:{sCot:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, rad:{rad}");
         }
 
         foreach (var deg in _fixed64Rad)
@@ -400,7 +399,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fCot - sCot));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fCot:{fCot}, sCot:{sCot:0.#######}, diff:{diff} >= {Epsilon:0.#######}, deg:{deg}");
+                Debug.LogError($"[Sample] fCot:{fCot}, sCot:{sCot:0.#######}, diff:{diff} >= {Epsilon:0.#######}, deg:{deg}");
         }
     }
     #endregion
@@ -418,7 +417,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fAsin - sAsin));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fAsin:{fAsin}, sAsin:{sAsin:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
+                Debug.LogError($"[Sample] fAsin:{fAsin}, sAsin:{sAsin:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
 
         foreach (var value in _fixed64One)
@@ -428,7 +427,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fAsin - sAsin));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fAsin:{fAsin}, sAsin:{sAsin:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
+                Debug.LogError($"[Sample] fAsin:{fAsin}, sAsin:{sAsin:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
 
         //Profiler.BeginSample("Fixed64Sample.ASin System");
@@ -463,7 +462,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fAcos - sAcos));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fAcos:{fAcos}, sAcos:{sAcos:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
+                Debug.LogError($"[Sample] fAcos:{fAcos}, sAcos:{sAcos:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
 
         foreach (var value in _fixed64One)
@@ -473,7 +472,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fAcos - sAcos));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fAcos:{fAcos}, sAcos:{sAcos:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
+                Debug.LogError($"[Sample] fAcos:{fAcos}, sAcos:{sAcos:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
     }
     private void Atan()
@@ -488,7 +487,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fAtan - sAtan));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fAtan:{fAtan}, sAtan:{sAtan:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
+                Debug.LogError($"[Sample] fAtan:{fAtan}, sAtan:{sAtan:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
 
         foreach (var value in _fixed64Rad)
@@ -498,7 +497,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fAtan - sAtan));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fAtan:{fAtan}, sAtan:{sAtan:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
+                Debug.LogError($"[Sample] fAtan:{fAtan}, sAtan:{sAtan:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
     }
     private void Atan2()
@@ -513,7 +512,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fAtan2 - sAtan2));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fAtan2:{fAtan2}, sAtan2:{sAtan2:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
+                Debug.LogError($"[Sample] fAtan2:{fAtan2}, sAtan2:{sAtan2:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
 
         foreach (var value in _fixed64Rad)
@@ -523,7 +522,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fAtan2 - sAtan2));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fAtan2:{fAtan2}, sAtan2:{sAtan2:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
+                Debug.LogError($"[Sample] fAtan2:{fAtan2}, sAtan2:{sAtan2:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
 
         //Profiler.BeginSample("Fixed64Sample.Atan2 System");
@@ -558,7 +557,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fAcot - sAcot));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fAcot:{fAcot}, sAcot:{sAcot:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
+                Debug.LogError($"[Sample] fAcot:{fAcot}, sAcot:{sAcot:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
 
         foreach (var value in _fixed64Rad)
@@ -568,7 +567,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fAcot - sAcot));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fAcot:{fAcot}, sAcot:{sAcot:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
+                Debug.LogError($"[Sample] fAcot:{fAcot}, sAcot:{sAcot:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, value:{value}");
         }
     }
     #endregion
@@ -587,7 +586,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fPow2 - sPow2));
             if (diff >= Epsilon * sPow2)
-                LogRelay.Error($"[Sample] fPow2:{fPow2}, sPow2:{sPow2:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, exp:{exp}");
+                Debug.LogError($"[Sample] fPow2:{fPow2}, sPow2:{sPow2:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, exp:{exp}");
         }
 
         //Profiler.BeginSample("Fixed64Sample.Pow2 System");
@@ -618,7 +617,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fPow - sPow));
             if (diff >= Epsilon * sPow)
-                LogRelay.Error($"[Sample] fPow:{fPow}, sPow:{sPow:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, exp:{exp}");
+                Debug.LogError($"[Sample] fPow:{fPow}, sPow:{sPow:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, exp:{exp}");
         }
     }
     private void Log2()
@@ -634,7 +633,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fLog2 - sLog2));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fLog2:{fLog2}, sLog2:{sLog2:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, a:{a}");
+                Debug.LogError($"[Sample] fLog2:{fLog2}, sLog2:{sLog2:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, a:{a}");
         }
     }
     private void Ln()
@@ -650,7 +649,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fLn - sLn));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fLn:{fLn}, sLn:{sLn:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, a:{a}");
+                Debug.LogError($"[Sample] fLn:{fLn}, sLn:{sLn:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, a:{a}");
         }
     }
     private void Lg()
@@ -666,7 +665,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
             double diff = Math.Abs(((double)fLg - sLg));
             if (diff >= Epsilon)
-                LogRelay.Error($"[Sample] fLg:{fLg}, sLg:{sLg:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, a:{a}");
+                Debug.LogError($"[Sample] fLg:{fLg}, sLg:{sLg:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, a:{a}");
         }
     }
     #endregion

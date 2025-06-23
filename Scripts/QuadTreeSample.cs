@@ -37,12 +37,12 @@ public sealed class QuadTreeSample : MonoBehaviour
                 private const int HeightScale = 2;
                 public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
                 {
-                    var shapeProperty = property.FindPropertyRelative(nameof(Shape));
-                    var weightProperty = property.FindPropertyRelative(nameof(Weight));
-
                     var size = new Vector2(position.size.x, position.size.y / HeightScale);
                     var shapePosition = new Rect(position.position, size);
                     var weightPosition = new Rect(position.x, position.y + size.y, size.x, size.y);
+
+                    var shapeProperty = property.FindPropertyRelative(nameof(Shape));
+                    var weightProperty = property.FindPropertyRelative(nameof(Weight));
 
                     EditorGUILayout.BeginHorizontal();
                     EditorGUI.PropertyField(shapePosition, shapeProperty);
@@ -69,12 +69,12 @@ public sealed class QuadTreeSample : MonoBehaviour
                 private const int HeightScale = 2;
                 public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
                 {
-                    var operateProperty = property.FindPropertyRelative(nameof(Operate));
-                    var weightProperty = property.FindPropertyRelative(nameof(Weight));
-
                     var size = new Vector2(position.size.x, position.size.y / HeightScale);
                     var operatePosition = new Rect(position.position, size);
                     var weightPosition = new Rect(position.x, position.y + size.y, size.x, size.y);
+
+                    var operateProperty = property.FindPropertyRelative(nameof(Operate));
+                    var weightProperty = property.FindPropertyRelative(nameof(Weight));
 
                     EditorGUILayout.BeginHorizontal();
                     EditorGUI.PropertyField(operatePosition, operateProperty);

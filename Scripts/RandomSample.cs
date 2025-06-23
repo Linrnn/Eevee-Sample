@@ -1,5 +1,4 @@
-﻿using Eevee.Diagnosis;
-using Eevee.Fixed;
+﻿using Eevee.Fixed;
 using Eevee.Random;
 using System;
 using System.Collections.Generic;
@@ -30,10 +29,10 @@ internal sealed class RandomSample : MonoBehaviour
         internal void Check(T item)
         {
             if (item.CompareTo(Min) < 0)
-                LogRelay.Error($"[Sample] {typeof(T).Name} item:{item} < {Min}");
+                Debug.LogError($"[Sample] {typeof(T).Name} item:{item} < {Min}");
 
             if (item.CompareTo(Max) >= 0)
-                LogRelay.Error($"[Sample] {typeof(T).Name} item:{item} >= {Max}");
+                Debug.LogError($"[Sample] {typeof(T).Name} item:{item} >= {Max}");
 
             _value.Add(item);
         }
@@ -127,7 +126,7 @@ internal sealed class RandomSample : MonoBehaviour
         {
             var circle = RandomRelay.OnUnitCircle();
             if ((circle.Magnitude() - 1).Abs() >= _epsilon0000001)
-                LogRelay.Error($"[Sample] OnUnitCircle {circle.Magnitude()} != 1 ");
+                Debug.LogError($"[Sample] OnUnitCircle {circle.Magnitude()} != 1 ");
         }
 
         for (int i = 0; i < _times; ++i)
@@ -135,14 +134,14 @@ internal sealed class RandomSample : MonoBehaviour
             var radius = RandomRelay.Number(1, 10);
             var circle = RandomRelay.InCircle(radius);
             if (circle.SqrMagnitude() > radius.Sqr())
-                LogRelay.Error($"[Sample] InCircle {circle.SqrMagnitude()} > {radius.Sqr()} ");
+                Debug.LogError($"[Sample] InCircle {circle.SqrMagnitude()} > {radius.Sqr()} ");
         }
 
         for (int i = 0; i < _times; ++i)
         {
             var sphere = RandomRelay.OnUnitSphere();
             if ((sphere.Magnitude() - 1).Abs() >= _epsilon0000001)
-                LogRelay.Error($"[Sample] OnUnitSphere {sphere.Magnitude()} != 1 ");
+                Debug.LogError($"[Sample] OnUnitSphere {sphere.Magnitude()} != 1 ");
         }
 
         for (int i = 0; i < _times; ++i)
@@ -150,7 +149,7 @@ internal sealed class RandomSample : MonoBehaviour
             var radius = RandomRelay.Number(1, 10);
             var sphere = RandomRelay.InSphere(radius);
             if (sphere.SqrMagnitude() > radius.Cube())
-                LogRelay.Error($"[Sample] InSphere {sphere.SqrMagnitude()} > {radius.Cube()} ");
+                Debug.LogError($"[Sample] InSphere {sphere.SqrMagnitude()} > {radius.Cube()} ");
         }
         #endregion
 

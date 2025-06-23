@@ -472,15 +472,15 @@ MonoBehaviour:
   _scale: 128
   _depthCount: 8
   _center:
-    X: 1280
-    Y: -2560
+    X: 1000
+    Y: -2000
   _extents:
     X: 9000
     Y: 7000
   _seed: 10
   _countLimit: 3000
   _speedRange: {x: 60, y: 120}
-  _removeEmptyNode: 0
+  _removeEmptyNode: 1
   _indexCount: 0
 --- !u!4 &898140558
 Transform:
@@ -514,7 +514,6 @@ MonoBehaviour:
   _treeIds: 03000000
   _height: 0
   _draw: 1
-  _elements: []
 --- !u!114 &898140561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -527,9 +526,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a731cfe77982a0948b071cd370191206, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorDrawQuadCountElement
-  _treeIds: 010000000400000006000000
-  _drawLineBall: 0
-  _height: 1
+  _treeIds: 03000000
+  _lineBall:
+    Show: 1
+    Color: {r: 1, g: 0, b: 1, a: 1}
+  _height: 0
   _depthCounts: []
 --- !u!114 &898140562
 MonoBehaviour:
@@ -580,7 +581,6 @@ MonoBehaviour:
   _treeId: 1
   _height: 0
   _color: {r: 0, g: 0, b: 1, a: 1}
-  _queries: 
 --- !u!1 &1579350787
 GameObject:
   m_ObjectHideFlags: 0
