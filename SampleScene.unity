@@ -509,7 +509,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6014a8d12311a5479273844a7dffd94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorDrawQuadElement
-  _circleAccuracy: 12
   _drawRange: 3
   _treeIds: 03000000
   _height: 0
@@ -558,7 +557,6 @@ MonoBehaviour:
   _looseColor: {r: 1, g: 0, b: 1, a: 1}
   _boundaryColor: {r: 0, g: 0, b: 1, a: 1}
   _shapeColor: {r: 0, g: 0, b: 0, a: 1}
-  _circleAccuracy: 12
   _height: 0
 --- !u!114 &898140563
 MonoBehaviour:
@@ -572,15 +570,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dd8a9e15c684ea48a9f9ac75aea533d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorDrawQuadQuery
-  _quadShape: 1
-  _position: {x: 0, y: 0}
-  _radius: 1
-  _circleAccuracy: 12
-  _extents: {x: 1, y: 1}
-  _angle: 0
-  _treeId: 1
+  _shape: 5
+  _center: {x: 0, y: 0}
+  _radius: 6000
+  _extents: {x: 6000, y: 8000}
+  _angle: 92
+  _polygon:
+  - {x: 3022, y: 2912}
+  - {x: -4474, y: 2000}
+  - {x: -2238, y: -3178}
+  - {x: 6348, y: -5256}
+  - {x: 13114, y: -900}
+  - {x: 11780, y: 2020}
+  _treeId: 3
   _height: 0
-  _color: {r: 0, g: 0, b: 1, a: 1}
+  _queryColor: {r: 0, g: 0, b: 0, a: 1}
+  _elementColor: {r: 0, g: 0, b: 1, a: 1}
+  _cacheIndex: 0
 --- !u!1 &1579350787
 GameObject:
   m_ObjectHideFlags: 0
