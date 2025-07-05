@@ -13,7 +13,7 @@ using SRandom = System.Random;
 /// <summary>
 /// 四叉树示例代码
 /// </summary>
-public sealed class QuadTreeSample : MonoBehaviour
+internal sealed class QuadTreeSample : MonoBehaviour
 {
     #region 类型
     [Serializable]

@@ -3,7 +3,7 @@ using Eevee.Pool;
 using Eevee.Random;
 using UnityEngine;
 
-public sealed class ProxySample : MonoBehaviour
+internal sealed class ProxySample : MonoBehaviour
 {
     [SerializeField] private int _randomSeed = 0;
 

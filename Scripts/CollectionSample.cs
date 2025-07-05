@@ -9,7 +9,7 @@ using UnityEngine.Profiling;
 /// <summary>
 /// Collection示例代码
 /// </summary>
-public sealed class CollectionSample : MonoBehaviour
+internal sealed class CollectionSample : MonoBehaviour
 {
     private IRandom _random;
     [SerializeField] private int _times;

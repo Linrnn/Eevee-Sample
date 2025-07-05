@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public sealed class QuadEntity : MonoBehaviour
+internal sealed class QuadEntity : MonoBehaviour
 {
     public int Index;
 }
