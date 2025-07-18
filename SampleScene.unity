@@ -494,6 +494,7 @@ GameObject:
   m_Component:
   - component: {fileID: 898140558}
   - component: {fileID: 898140557}
+  - component: {fileID: 898140564}
   - component: {fileID: 898140561}
   - component: {fileID: 898140560}
   - component: {fileID: 898140563}
@@ -570,10 +571,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6014a8d12311a5479273844a7dffd94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorDrawQuadElement
-  _drawRange: 3
+  _range: 3
   _treeIds: 03000000
+  _indexes: 
   _height: 0
   _draw: 1
+  _drawIndex: 1
 --- !u!114 &898140561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -591,6 +594,7 @@ MonoBehaviour:
     Show: 1
     Color: {r: 1, g: 0, b: 1, a: 1}
   _height: 0
+  _drawIndex: 1
   _depthCounts: []
 --- !u!114 &898140562
 MonoBehaviour:
@@ -606,6 +610,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorDrawQuadTree
   _treeId: 3
   _indexes: 
+  _drawIndex: 1
   _emptyNode:
     Show: 0
     Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -645,9 +650,25 @@ MonoBehaviour:
   - {x: 11780, y: 2020}
   _treeId: 3
   _height: 0
+  _drawIndex: 1
   _queryColor: {r: 0, g: 0, b: 0, a: 1}
   _elementColor: {r: 0, g: 0, b: 1, a: 1}
   _cacheIndex: 0
+--- !u!114 &898140564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898140556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d66a4d652fe614546b9f51a9a4dd7341, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorQuadDiagnosis
+  _print: 0
+  _treeIds: 
+  _indexes: 
 --- !u!1 &1579350787
 GameObject:
   m_ObjectHideFlags: 0
