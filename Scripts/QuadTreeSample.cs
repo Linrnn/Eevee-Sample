@@ -114,17 +114,8 @@ internal sealed class QuadTreeSample : MonoBehaviour
 
     private sealed class SampleQuadDrawProxy : IQuadDrawProxy
     {
+        public Type TreeEnum => typeof(QuadFunc);
         public QuadTreeManager Manager => _quadTreeManager;
-        public Color GetElementColor(int treeId) => treeId switch
-        {
-            (int)QuadFunc.Unit => Color.black,
-            (int)QuadFunc.GuardBox => Color.red,
-            (int)QuadFunc.Shop => Color.cyan,
-            (int)QuadFunc.Item => Color.green,
-            (int)QuadFunc.GuardArea => Color.yellow,
-            (int)QuadFunc.Region => Color.gray,
-            _ => Color.white,
-        };
         public int GetIndex(GameObject go)
         {
             var entity = go.GetComponent<QuadEntity>();

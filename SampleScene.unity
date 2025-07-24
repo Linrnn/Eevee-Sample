@@ -574,6 +574,7 @@ MonoBehaviour:
   _range: 3
   _treeIds: 03000000
   _indexes: 
+  _color: {r: 0, g: 1, b: 0, a: 1}
   _height: 0
   _draw: 1
   _drawIndex: 1
