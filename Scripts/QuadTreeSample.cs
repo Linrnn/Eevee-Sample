@@ -27,7 +27,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
         [Serializable]
         private struct ShapeWeight : IWeight
         {
-            [SerializeField] internal QuadShape Shape;
+            [SerializeField] internal QuadTreeShape Shape;
             [SerializeField] internal int Weight;
             public readonly int GetWeight() => Weight;
 
@@ -92,7 +92,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
         [SerializeField] private OperateWeight[] _operateWeights;
         internal SRandom Random;
 
-        internal readonly QuadShape GetShape() => Get(_shapeWeights).Shape;
+        internal readonly QuadTreeShape GetShape() => Get(_shapeWeights).Shape;
         internal readonly ElementOperate GetOperate() => Get(_operateWeights).Operate;
         private readonly T Get<T>(T[] weights) where T : IWeight
         {
@@ -112,7 +112,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
         }
     }
 
-    private sealed class SampleQuadDrawProxy : IQuadDrawProxy
+    private sealed class SampleIQuadTreeDrawProxy : IQuadTreeDrawProxy
     {
         public Type TreeEnum => typeof(QuadFunc);
         public QuadTreeManager Manager => _quadTreeManager;
@@ -197,12 +197,12 @@ internal sealed class QuadTreeSample : MonoBehaviour
         var random = new SRandom(_seed);
         var configs = new List<QuadTreeConfig>();
 
-        configs.Add(QuadTreeConfig.Build<DynamicQuadTree>((int)QuadFunc.Unit, QuadShape.Circle, new Vector2DInt(64, 64)));
-        configs.Add(QuadTreeConfig.Build<DynamicQuadTree>((int)QuadFunc.GuardBox, QuadShape.AABB, new Vector2DInt(64, 64)));
-        configs.Add(QuadTreeConfig.Build<MeshQuadTree>((int)QuadFunc.Shop, QuadShape.Circle, new Vector2DInt(512, 512)));
-        configs.Add(QuadTreeConfig.Build<MeshQuadTree>((int)QuadFunc.Item, QuadShape.AABB, new Vector2DInt(16, 16)));
-        configs.Add(QuadTreeConfig.Build<LooseQuadTree>((int)QuadFunc.GuardArea, QuadShape.Circle, new Vector2DInt(1024, 1024)));
-        configs.Add(QuadTreeConfig.Build<LooseQuadTree>((int)QuadFunc.Region, QuadShape.AABB, new Vector2DInt(256, 256)));
+        configs.Add(QuadTreeConfig.Build<DynamicQuadTree>((int)QuadFunc.Unit, QuadTreeShape.Circle, new Vector2DInt(64, 64)));
+        configs.Add(QuadTreeConfig.Build<DynamicQuadTree>((int)QuadFunc.GuardBox, QuadTreeShape.AABB, new Vector2DInt(64, 64)));
+        configs.Add(QuadTreeConfig.Build<MeshQuadTree>((int)QuadFunc.Shop, QuadTreeShape.Circle, new Vector2DInt(512, 512)));
+        configs.Add(QuadTreeConfig.Build<MeshQuadTree>((int)QuadFunc.Item, QuadTreeShape.AABB, new Vector2DInt(16, 16)));
+        configs.Add(QuadTreeConfig.Build<LooseQuadTree>((int)QuadFunc.GuardArea, QuadTreeShape.Circle, new Vector2DInt(1024, 1024)));
+        configs.Add(QuadTreeConfig.Build<LooseQuadTree>((int)QuadFunc.Region, QuadTreeShape.AABB, new Vector2DInt(256, 256)));
 
         _randomWeight.Random = random;
         _random = random;
@@ -245,7 +245,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
         int height = _random.Next(config.Extents.Y >> 1, config.Extents.Y << 2);
         int cx = _random.Next(boundary.Left() + width, boundary.Right() - width);
         int cy = _random.Next(boundary.Bottom() + height, boundary.Top() - height);
-        var shape = config.Shape is QuadShape.Circle ? new AABB2DInt(cx, cy, Math.Min(width, height)) : new AABB2DInt(cx, cy, width, height);
+        var shape = config.Shape is QuadTreeShape.Circle ? new AABB2DInt(cx, cy, Math.Min(width, height)) : new AABB2DInt(cx, cy, width, height);
 
         _quadTreeManager.Insert(config.TreeId, index, in shape);
         _runtime.Add(index, new QuadRuntime(config.TreeId, in shape));
