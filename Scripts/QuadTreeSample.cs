@@ -112,10 +112,10 @@ internal sealed class QuadTreeSample : MonoBehaviour
         }
     }
 
-    private sealed class SampleIQuadTreeDrawProxy : IQuadTreeDrawProxy
+    private sealed class SampleQuadTreeDrawProxy : IQuadTreeDrawProxy
     {
         public Type TreeEnum => typeof(QuadFunc);
-        public QuadTreeManager Manager => _quadTreeManager;
+        public QuadTreeManager Manager => _manager;
         public int GetIndex(GameObject go)
         {
             var entity = go.GetComponent<QuadEntity>();
@@ -189,7 +189,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
     private List<QuadTreeConfig> _configs;
     private Dictionary<int, QuadRuntime> _runtime;
     private List<int> _indexes;
-    private static QuadTreeManager _quadTreeManager;
+    private static QuadTreeManager _manager;
     #endregion
 
     private void OnEnable()
@@ -209,7 +209,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
         _configs = configs;
         _runtime = new Dictionary<int, QuadRuntime>();
         _indexes = new List<int>();
-        _quadTreeManager = new QuadTreeManager(_scale, _depthCount, new AABB2DInt(_center, _extents), _configs);
+        _manager = new QuadTreeManager(_scale, _depthCount, new AABB2DInt(_center, _extents), _configs);
     }
     private void Update()
     {
@@ -226,19 +226,19 @@ internal sealed class QuadTreeSample : MonoBehaviour
         QuadUpdate();
 
         if (_removeEmptyNode)
-            _quadTreeManager.RemoveEmptyNode();
+            _manager.RemoveEmptyNode();
         _indexCount = _indexes.Count;
     }
     private void OnDisable()
     {
         LogProxy.Inject(new UnityLog());
-        _quadTreeManager.Clean();
-        _quadTreeManager = null;
+        _manager.Clean();
+        _manager = null;
     }
 
     private void QuadInsert()
     {
-        var boundary = _quadTreeManager.MaxBoundary;
+        var boundary = _manager.MaxBoundary;
         int index = _indexes.Count > 0 ? _indexes[^1] + 1 : 1;
         var config = _configs[_random.Next(0, _configs.Count)];
         int width = _random.Next(config.Extents.X >> 1, config.Extents.X << 2);
@@ -247,7 +247,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
         int cy = _random.Next(boundary.Bottom() + height, boundary.Top() - height);
         var shape = config.Shape is QuadTreeShape.Circle ? new AABB2DInt(cx, cy, Math.Min(width, height)) : new AABB2DInt(cx, cy, width, height);
 
-        _quadTreeManager.Insert(config.TreeId, index, in shape);
+        _manager.Insert(config.TreeId, index, in shape);
         _runtime.Add(index, new QuadRuntime(config.TreeId, in shape));
         _indexes.Add(index);
         _indexes.Sort(Comparer.Int);
@@ -285,7 +285,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
         int index = _indexes[idx];
         var runtime = _runtime[index];
 
-        _quadTreeManager.Remove(runtime.TreeId(), index, in runtime.Shape);
+        _manager.Remove(runtime.TreeId(), index, in runtime.Shape);
         _runtime.Remove(index);
         _indexes.RemoveAt(idx);
     }
@@ -296,10 +296,10 @@ internal sealed class QuadTreeSample : MonoBehaviour
         var newPosition = oldPosition + offset;
         var extents = runtime.Shape.HalfSize();
         var shape = new AABB2DInt(newPosition, extents);
-        if (!Geometry.Contain(in _quadTreeManager.MaxBoundary, in shape))
+        if (!Geometry.Contain(in _manager.MaxBoundary, in shape))
             return false;
 
-        _quadTreeManager.Update(runtime.TreeId(), index, new Change<Vector2DInt>(oldPosition, newPosition), extents);
+        _manager.Update(runtime.TreeId(), index, new Change<Vector2DInt>(oldPosition, newPosition), extents);
         _runtime[index] = new QuadRuntime(runtime.TreeId(), oldPosition, new AABB2DInt(newPosition, extents));
         return true;
     }
