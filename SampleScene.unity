@@ -192,7 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acffbec144432ea45b114b416a7bc2c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindArea
-  _moveType: 0
+  _moveType: 130
   _collType: 2
   _allocatorId: 0
   _drawPoint: 0
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62925a28a2f2bf841aeebf117da48b66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindJumpPoint
-  _moveType: 0
+  _moveType: 130
   _collType: 2
   _drawPoint: 0
   _drawPrev: 0
@@ -232,7 +232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70f5923963aa15b4f961daf74b5bb24d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindPass
-  _moveType: 0
+  _moveType: 130
   _drawPoint: 0
   _color: {r: 0, g: 1, b: 0, a: 1}
   _height: 0
@@ -248,7 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 207629fee0946b6458c812a9ec2d47a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindMoveable
-  _moveType: 0
+  _moveType: 130
   _drawIndex: 0
   _drawPoint: 0
   _drawDir: 0
@@ -267,7 +267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14478ca12a2d1ce42842254398bb066b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindObstacle
-  _obstacleType: 0
+  _obstacleType: 2
   _drawIndex: 0
   _drawPoint: 0
   _drawTerrain: 0
@@ -285,7 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 607d26b5e8677b44e9608dfbff9618b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindProcess
-  _findFunc: 0
+  _findFunc: 1
   _index: 0
   _repeatedRate: 0
   _totalPointCount: 0
@@ -310,7 +310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2fd449bcda69654e9dbd041fe1e3de7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindResult
-  _findFunc: 0
+  _findFunc: 1
   _indexes: 
   _drawPoint: 0
   _drawNext: 0
@@ -365,7 +365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::PathFindSample
   _map: {fileID: 4900000, guid: 9aef6d4ea1ba5324682d82ee25db63f9, type: 3}
-  _minBoundary: {x: -1321, y: -612}
+  _minBoundary: {x: 1847, y: -659}
   _gridSize: 32
 --- !u!1 &213234592
 GameObject:
