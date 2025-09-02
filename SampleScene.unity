@@ -179,7 +179,6 @@ MonoBehaviour:
   _startColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   _lineColor: {r: 0.25, g: 0.25, b: 0.25, a: 1}
   _endColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
-  _height: 0
 --- !u!114 &76929661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,7 +196,6 @@ MonoBehaviour:
   _allocatorId: 0
   _drawPoint: 0
   _color: {r: 1, g: 0, b: 0, a: 1}
-  _height: 0
 --- !u!114 &76929662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,7 +217,6 @@ MonoBehaviour:
   _color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   _prevColor: {r: 0.8, g: 0.7372549, b: 0.01254902, a: 1}
   _nextColor: {r: 0.5, g: 0.46078432, b: 0.007843138, a: 1}
-  _height: 0
 --- !u!114 &76929663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235,7 +232,6 @@ MonoBehaviour:
   _moveType: 130
   _drawPoint: 0
   _color: {r: 0, g: 1, b: 0, a: 1}
-  _height: 0
 --- !u!114 &76929664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,12 +245,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindMoveable
   _moveType: 130
+  _indexes: 
   _drawIndex: 0
   _drawPoint: 0
   _drawDir: 0
   _color: {r: 0, g: 0, b: 1, a: 1}
   _dirColor: {r: 0, g: 0, b: 0.8, a: 1}
-  _height: 0
 --- !u!114 &76929665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,11 +264,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindObstacle
   _obstacleType: 2
+  _indexes: 
   _drawIndex: 0
   _drawPoint: 0
   _drawTerrain: 0
   _color: {r: 1, g: 0, b: 1, a: 1}
-  _height: 0
 --- !u!114 &76929666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -297,7 +293,6 @@ MonoBehaviour:
   _loop: 0
   _color: {r: 1, g: 1, b: 1, a: 1}
   _decrease: 0.2
-  _height: 0
 --- !u!114 &76929667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,7 +313,6 @@ MonoBehaviour:
   _lineColor: {r: 0, g: 0.5, b: 0.5, a: 1}
   _endColor: {r: 0, g: 0.8, b: 0.8, a: 1}
   _nextColor: {r: 0, g: 0.8, b: 0.8, a: 1}
-  _height: 0
 --- !u!114 &76929668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,7 +328,6 @@ MonoBehaviour:
   _points: []
   _drawPoint: 1
   _color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  _height: 0
 --- !u!114 &76929669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -352,6 +345,7 @@ MonoBehaviour:
   _process: 0
   _log: 0
   _indexes: 
+  _height: 0
 --- !u!114 &76929670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,8 +359,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::PathFindSample
   _map: {fileID: 4900000, guid: 9aef6d4ea1ba5324682d82ee25db63f9, type: 3}
-  _minBoundary: {x: 1847, y: -659}
-  _gridSize: 32
+  _minBoundary: {x: 18.47, y: -6.59}
+  _gridSize: 2
 --- !u!1 &213234592
 GameObject:
   m_ObjectHideFlags: 0
@@ -766,19 +760,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05f9f473d177c754ca94579cd4c13a30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::QuadTreeSample
-  _randomWeight:
-    _shapeWeights:
-    - Shape: 1
-      Weight: 20
-    - Shape: 2
-      Weight: 80
-    _operateWeights:
-    - Operate: 0
-      Weight: 60
-    - Operate: 1
-      Weight: 30
-    - Operate: 2
-      Weight: 10
+  _operateWeights:
+  - Key: 0
+    Weight: 60
+  - Key: 1
+    Weight: 30
+  - Key: 2
+    Weight: 10
   _scale: 128
   _depthCount: 8
   _center:
@@ -819,11 +807,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6014a8d12311a5479273844a7dffd94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorDrawQuadElement
-  _range: 3
   _treeIds: 03000000
   _indexes: 
   _color: {r: 0, g: 1, b: 0, a: 1}
-  _height: 0
   _draw: 1
   _drawIndex: 1
 --- !u!114 &898140561
@@ -872,7 +858,6 @@ MonoBehaviour:
   _looseColor: {r: 1, g: 0, b: 1, a: 1}
   _boundaryColor: {r: 0, g: 0, b: 1, a: 1}
   _shapeColor: {r: 0, g: 0, b: 0, a: 1}
-  _height: 0
 --- !u!114 &898140563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -897,8 +882,7 @@ MonoBehaviour:
   - {x: 6348, y: -5256}
   - {x: 13114, y: -900}
   - {x: 11780, y: 2020}
-  _treeId: 3
-  _height: 0
+  _treeId: 5
   _drawIndex: 1
   _queryColor: {r: 0, g: 0, b: 0, a: 1}
   _elementColor: {r: 0, g: 0, b: 1, a: 1}
@@ -915,9 +899,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d66a4d652fe614546b9f51a9a4dd7341, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.QuadTree.EditorQuadDiagnosis
-  _enableLog: 0
+  _log: 0
   _treeIds: 
   _indexes: 
+  _height: 0
 --- !u!1 &1579350787
 GameObject:
   m_ObjectHideFlags: 0

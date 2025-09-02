@@ -6,7 +6,6 @@ using EeveeEditor;
 using EeveeEditor.QuadTree;
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using SRandom = System.Random;
 
@@ -16,117 +15,10 @@ using SRandom = System.Random;
 internal sealed class QuadTreeSample : MonoBehaviour
 {
     #region 类型
-    [Serializable]
-    private struct RandomWeight
-    {
-        private interface IWeight
-        {
-            int GetWeight();
-        }
-
-        [Serializable]
-        private struct ShapeWeight : IWeight
-        {
-            [SerializeField] internal QuadTreeShape Shape;
-            [SerializeField] internal int Weight;
-            public readonly int GetWeight() => Weight;
-
-            [CustomPropertyDrawer(typeof(ShapeWeight))]
-            private sealed class ShapeWeightDrawer : PropertyDrawer
-            {
-                private const int HeightScale = 2;
-                public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-                {
-                    var size = new Vector2(position.size.x, position.size.y / HeightScale);
-                    var shapePosition = new Rect(position.position, size);
-                    var weightPosition = new Rect(position.x, position.y + size.y, size.x, size.y);
-
-                    var shapeProperty = property.FindPropertyRelative(nameof(Shape));
-                    var weightProperty = property.FindPropertyRelative(nameof(Weight));
-
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUI.PropertyField(shapePosition, shapeProperty);
-                    EditorGUI.PropertyField(weightPosition, weightProperty);
-                    EditorGUILayout.EndHorizontal();
-
-                    shapeProperty.Dispose();
-                    weightProperty.Dispose();
-                }
-                public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => base.GetPropertyHeight(property, label) * HeightScale;
-            }
-        }
-
-        [Serializable]
-        private struct OperateWeight : IWeight
-        {
-            [SerializeField] internal ElementOperate Operate;
-            [SerializeField] internal int Weight;
-            public readonly int GetWeight() => Weight;
-
-            [CustomPropertyDrawer(typeof(OperateWeight))]
-            private sealed class OperateWeightWeightDrawer : PropertyDrawer
-            {
-                private const int HeightScale = 2;
-                public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-                {
-                    var size = new Vector2(position.size.x, position.size.y / HeightScale);
-                    var operatePosition = new Rect(position.position, size);
-                    var weightPosition = new Rect(position.x, position.y + size.y, size.x, size.y);
-
-                    var operateProperty = property.FindPropertyRelative(nameof(Operate));
-                    var weightProperty = property.FindPropertyRelative(nameof(Weight));
-
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUI.PropertyField(operatePosition, operateProperty);
-                    EditorGUI.PropertyField(weightPosition, weightProperty);
-                    EditorGUILayout.EndHorizontal();
-
-                    operateProperty.Dispose();
-                    weightProperty.Dispose();
-                }
-                public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => base.GetPropertyHeight(property, label) * HeightScale;
-            }
-        }
-
-        [SerializeField] private ShapeWeight[] _shapeWeights;
-        [SerializeField] private OperateWeight[] _operateWeights;
-        internal SRandom Random;
-
-        internal readonly QuadTreeShape GetShape() => Get(_shapeWeights).Shape;
-        internal readonly ElementOperate GetOperate() => Get(_operateWeights).Operate;
-        private readonly T Get<T>(T[] weights) where T : IWeight
-        {
-            int sum = 0;
-            foreach (var weight in weights)
-                sum += weight.GetWeight();
-
-            int next = Random.Next(0, sum);
-            int value = next;
-            foreach (var weight in weights)
-                if (value <= weight.GetWeight())
-                    return weight;
-                else
-                    value -= weight.GetWeight();
-
-            return default;
-        }
-    }
-
     private sealed class SampleQuadTreeDrawProxy : IQuadTreeDrawProxy
     {
         public Type TreeEnum => typeof(QuadFunc);
         public QuadTreeManager Manager => _manager;
-        public int GetIndex(GameObject go)
-        {
-            var entity = go.GetComponent<QuadEntity>();
-            return entity.Index;
-        }
-        public void GetIndexes(GameObject go, ICollection<int> indexes)
-        {
-            var entities = go.GetComponentsInChildren<QuadEntity>();
-            foreach (var entity in entities)
-                indexes.Add(entity.Index);
-        }
     }
 
     private readonly struct QuadRuntime
@@ -170,7 +62,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
     #endregion
 
     #region 序列化字段
-    [Header("随机权重")] [SerializeField] private RandomWeight _randomWeight;
+    [Header("随机权重")] [SerializeField] private KeyWeight<ElementOperate>[] _operateWeights;
 
     [Header("四叉树配置")] [SerializeField] private int _scale;
     [SerializeField] private int _depthCount;
@@ -195,8 +87,8 @@ internal sealed class QuadTreeSample : MonoBehaviour
     private void OnEnable()
     {
         var random = new SRandom(_seed);
+        // ReSharper disable once UseObjectOrCollectionInitializer
         var configs = new List<QuadTreeConfig>();
-
         configs.Add(QuadTreeConfig.Build<DynamicQuadTree>((int)QuadFunc.Unit, QuadTreeShape.Circle, new Vector2DInt(64, 64)));
         configs.Add(QuadTreeConfig.Build<DynamicQuadTree>((int)QuadFunc.GuardBox, QuadTreeShape.AABB, new Vector2DInt(64, 64)));
         configs.Add(QuadTreeConfig.Build<MeshQuadTree>((int)QuadFunc.Shop, QuadTreeShape.Circle, new Vector2DInt(512, 512)));
@@ -204,7 +96,6 @@ internal sealed class QuadTreeSample : MonoBehaviour
         configs.Add(QuadTreeConfig.Build<LooseQuadTree>((int)QuadFunc.GuardArea, QuadTreeShape.Circle, new Vector2DInt(1024, 1024)));
         configs.Add(QuadTreeConfig.Build<LooseQuadTree>((int)QuadFunc.Region, QuadTreeShape.AABB, new Vector2DInt(256, 256)));
 
-        _randomWeight.Random = random;
         _random = random;
         _configs = configs;
         _runtime = new Dictionary<int, QuadRuntime>();
@@ -213,8 +104,8 @@ internal sealed class QuadTreeSample : MonoBehaviour
     }
     private void Update()
     {
-        var operate = _randomWeight.GetOperate();
-        switch (operate)
+        var keyWeight = KeyWeight<ElementOperate>.Get(_operateWeights, _random);
+        switch (keyWeight.Key)
         {
             case ElementOperate.Insert:
                 if (_indexes.Count < _countLimit)

@@ -17,72 +17,6 @@ using MoveFunc = System.Byte;
 internal sealed class PathFindSample : MonoBehaviour
 {
     #region 类型
-    private enum GroundType : Ground
-    {
-        None = 0,
-        Any = 1,
-        Walk = 2,
-        Fly = 4,
-        Cons = 8,
-        Peon = 16,
-        Blight = 32,
-        Water = 64,
-        Amp = 128,
-    }
-
-    private enum MoveType : MoveFunc
-    {
-        Fly = GroundType.Fly,
-        Marin = GroundType.Amp,
-        Water = GroundType.Water | GroundType.Amp,
-        Foot = GroundType.Walk | GroundType.Amp,
-    }
-
-    private enum CollType : CollSize
-    {
-        _0,
-        _1,
-        _2,
-        _3,
-        _4,
-    }
-
-    private sealed class SamplePathFindDrawProxy : IPathFindDrawProxy
-    {
-        public Type GroupTypeEnum => typeof(GroundType);
-        public Type MoveTypeEnum => typeof(MoveType);
-        public Type CollTypeEnum => typeof(CollType);
-        public PathFindComponent Component => _sample._component;
-        public Vector2 MinBoundary => _sample._minBoundary;
-        public float GridSize => _sample._gridSize;
-        public bool ValidColl(CollSize value) => value is >= (CollSize)CollType._1 and <= (CollSize)CollType._4;
-        // todo eevee
-        public Vector2Int? GetCurrentPoint(int index) => throw new NotImplementedException();
-        public Vector2? GetMoveDirection(int index) => throw new NotImplementedException();
-    }
-
-    private sealed class SamplePathFindCollisionGetter : IPathFindCollisionGetter
-    {
-        public CollSize GetNull() => (CollSize)CollType._0;
-        public CollSize GetMax(IList<CollSize> collisions) => collisions.GetMax();
-        public PathFindPeek Get(CollSize coll) => coll switch
-        {
-            (CollSize)CollType._1 => default,
-            (CollSize)CollType._2 => new PathFindPeek(-1, -1, 0, 0),
-            (CollSize)CollType._3 => new PathFindPeek(-1, -1, 1, 1),
-            (CollSize)CollType._4 => new PathFindPeek(-2, -2, 1, 1),
-            _ => throw new IndexOutOfRangeException($"不合法的碰撞尺寸：{coll}"),
-        };
-        public PathFindPeek Get(int x, int y, CollSize coll) => coll switch
-        {
-            (CollSize)CollType._1 => new PathFindPeek(x, y, x, y),
-            (CollSize)CollType._2 => new PathFindPeek(x - 1, y - 1, x, y),
-            (CollSize)CollType._3 => new PathFindPeek(x - 1, y - 1, x + 1, y + 1),
-            (CollSize)CollType._4 => new PathFindPeek(x - 2, y - 2, x + 1, y + 1),
-            _ => throw new IndexOutOfRangeException($"不合法的碰撞尺寸：{coll}"),
-        };
-    }
-
     private sealed class SamplePathPathFindObjectPoolGetter : IPathFindObjectPoolGetter
     {
         private readonly object _listPoolLock = new();
@@ -129,6 +63,72 @@ internal sealed class PathFindSample : MonoBehaviour
                 collection.Release2Pool();
         }
         public void Release<TKey, TValue>(ref Dictionary<TKey, TValue> collection) => DictionaryPool.Release(ref collection);
+    }
+
+    private sealed class SamplePathFindDrawProxy : IPathFindDrawProxy
+    {
+        public Type GroupTypeEnum => typeof(GroundType);
+        public Type MoveTypeEnum => typeof(MoveType);
+        public Type CollTypeEnum => typeof(CollType);
+        public PathFindComponent Component => _sample._component;
+        public Vector2 MinBoundary => _sample._minBoundary;
+        public float GridSize => _sample._gridSize;
+        public bool ValidColl(CollSize value) => value is >= (CollSize)CollType._1 and <= (CollSize)CollType._4;
+        // todo eevee
+        public Vector2Int? GetCurrentPoint(int index) => throw new NotImplementedException();
+        public Vector2? GetMoveDirection(int index) => throw new NotImplementedException();
+    }
+
+    private sealed class SamplePathFindCollisionGetter : IPathFindCollisionGetter
+    {
+        public CollSize GetNull() => (CollSize)CollType._0;
+        public CollSize GetMax(IList<CollSize> collisions) => collisions.GetMax();
+        public PathFindPeek Get(CollSize coll) => coll switch
+        {
+            (CollSize)CollType._1 => default,
+            (CollSize)CollType._2 => new PathFindPeek(-1, -1, 0, 0),
+            (CollSize)CollType._3 => new PathFindPeek(-1, -1, 1, 1),
+            (CollSize)CollType._4 => new PathFindPeek(-2, -2, 1, 1),
+            _ => throw new IndexOutOfRangeException($"不合法的碰撞尺寸：{coll}"),
+        };
+        public PathFindPeek Get(int x, int y, CollSize coll) => coll switch
+        {
+            (CollSize)CollType._1 => new PathFindPeek(x, y, x, y),
+            (CollSize)CollType._2 => new PathFindPeek(x - 1, y - 1, x, y),
+            (CollSize)CollType._3 => new PathFindPeek(x - 1, y - 1, x + 1, y + 1),
+            (CollSize)CollType._4 => new PathFindPeek(x - 2, y - 2, x + 1, y + 1),
+            _ => throw new IndexOutOfRangeException($"不合法的碰撞尺寸：{coll}"),
+        };
+    }
+
+    private enum GroundType : Ground
+    {
+        None = 0,
+        Any = 1,
+        Walk = 2,
+        Fly = 4,
+        Cons = 8,
+        Peon = 16,
+        Blight = 32,
+        Water = 64,
+        Amp = 128,
+    }
+
+    private enum MoveType : MoveFunc
+    {
+        Fly = GroundType.Fly,
+        Marin = GroundType.Amp,
+        Water = GroundType.Water | GroundType.Amp,
+        Foot = GroundType.Walk | GroundType.Amp,
+    }
+
+    private enum CollType : CollSize
+    {
+        _0,
+        _1,
+        _2,
+        _3,
+        _4,
     }
     #endregion
 
