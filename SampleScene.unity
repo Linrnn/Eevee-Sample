@@ -246,7 +246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindMoveable
   _moveType: 130
   _indexes: 
-  _drawIndex: 0
+  _drawIndex: 1
   _drawPoint: 0
   _drawDir: 0
   _color: {r: 0, g: 0, b: 1, a: 1}
@@ -340,10 +340,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6787e6d5d08cb74c86b97cb8840e7d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindDiagnosis
-  _nextPoint: 0
-  _path: 0
+  _nextPoint: 1
+  _path: 1
   _process: 0
-  _log: 0
+  _log: 1
   _indexes: 
   _height: 0
 --- !u!114 &76929670
@@ -358,9 +358,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a9af5a1cdcde49498c1625b2be6edfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::PathFindSample
+  _moveTypeWeights:
+  - Key: 4
+    Value: 20
+  - Key: 128
+    Value: 20
+  - Key: 130
+    Value: 60
+  _collTypeWeights:
+  - Key: 1
+    Value: 25
+  - Key: 2
+    Value: 25
+  - Key: 3
+    Value: 25
+  - Key: 4
+    Value: 25
+  _operateWeights:
+  - Key: 0
+    Value: 60
+  - Key: 1
+    Value: 25
+  - Key: 2
+    Value: 15
+  - Key: 3
+    Value: 5
   _map: {fileID: 4900000, guid: 9aef6d4ea1ba5324682d82ee25db63f9, type: 3}
   _minBoundary: {x: 18.47, y: -6.59}
-  _gridSize: 2
+  _gridSize: 4
+  _seed: 20
+  _countLimit: 100
+  _speedRange: {x: 100, y: 200}
+  _arrive:
+    RawValue: 6442450944
+  _indexAllocator: 0
+  _indexCount: 0
 --- !u!1 &213234592
 GameObject:
   m_ObjectHideFlags: 0
@@ -760,13 +792,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05f9f473d177c754ca94579cd4c13a30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::QuadTreeSample
+  _funcWeights:
+  - Key: 1
+    Value: 10
+  - Key: 2
+    Value: 10
+  - Key: 3
+    Value: 10
+  - Key: 4
+    Value: 10
+  - Key: 5
+    Value: 10
+  - Key: 6
+    Value: 10
   _operateWeights:
   - Key: 0
-    Weight: 60
+    Value: 60
   - Key: 1
-    Weight: 30
+    Value: 30
   - Key: 2
-    Weight: 10
+    Value: 10
   _scale: 128
   _depthCount: 8
   _center:
@@ -779,6 +824,7 @@ MonoBehaviour:
   _countLimit: 3000
   _speedRange: {x: 60, y: 120}
   _removeEmptyNode: 1
+  _indexAllocator: 0
   _indexCount: 0
 --- !u!4 &898140558
 Transform:

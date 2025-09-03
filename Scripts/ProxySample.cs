@@ -5,7 +5,7 @@ using UnityEngine;
 
 internal sealed class ProxySample : MonoBehaviour
 {
-    [SerializeField] private int _randomSeed = 0;
+    [SerializeField] private int _randomSeed;
 
     private void OnEnable()
     {
