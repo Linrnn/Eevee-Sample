@@ -23,50 +23,79 @@ internal sealed class PathFindSample : MonoBehaviour
     #region 类型
     private sealed class SamplePathPathFindObjectPoolGetter : IPathFindObjectPoolGetter
     {
-        private readonly object _listPoolLock = new();
-        private readonly object _mapPoolLock = new();
+        private readonly CollectionPool _collectionPool = new();
 
-        public List<T> ListAlloc<T>() => ListPool.Alloc<T>();
-        public List<T> ListAlloc<T>(bool fromThread)
+        public List<T> ListAlloc<T>() => CollectionPool<List<T>>.Alloc(_collectionPool);
+        public List<T> ListAlloc<T>(bool subThread)
         {
-            if (fromThread)
-                lock (_listPoolLock)
-                    return ListPool.Alloc<T>();
-            return ListPool.Alloc<T>();
+            if (subThread)
+                lock (_collectionPool)
+                    return CollectionPool<List<T>>.Alloc(_collectionPool);
+            return CollectionPool<List<T>>.Alloc(_collectionPool);
         }
         public List<T> ListAlloc<T>(int capacity)
         {
-            var collection = ListPool.Alloc<T>();
+            var collection = CollectionPool<List<T>>.Alloc(_collectionPool);
             collection.Capacity = capacity;
             return collection;
         }
-        public void Alloc<T>(ref List<T> collection) => ListPool.Alloc(ref collection);
-        public void Release<T>(List<T> collection) => collection.Release2Pool();
-        public void Release<T>(ref List<T> collection) => ListPool.Release(ref collection);
-
-        public Stack<T> StackAlloc<T>() => StackPool.Alloc<T>();
-        public void Release<T>(Stack<T> collection) => collection.Release2Pool();
-
-        public void Alloc<T>(ref HashSet<T> collection) => HashSetPool.Alloc(ref collection);
-        public void Release<T>(ref HashSet<T> collection) => HashSetPool.Release(ref collection);
-
-        public Dictionary<TKey, TValue> MapAlloc<TKey, TValue>(bool fromThread)
+        public void Alloc<T>(ref List<T> collection) => collection = CollectionPool<List<T>>.Alloc(_collectionPool);
+        public void Release<T>(List<T> collection)
         {
-            if (fromThread)
-                lock (_mapPoolLock)
-                    return DictionaryPool.Alloc<TKey, TValue>();
-            return DictionaryPool.Alloc<TKey, TValue>();
+            var collectionPool = _collectionPool;
+            CollectionPool<List<T>>.Release(collection, ref collectionPool);
+            collection.Clear();
         }
-        public void Alloc<TKey, TValue>(ref Dictionary<TKey, TValue> collection) => DictionaryPool.Alloc(ref collection);
-        public void Release<TKey, TValue>(Dictionary<TKey, TValue> collection, bool fromThread)
+        public void Release<T>(ref List<T> collection)
         {
-            if (fromThread)
-                lock (_mapPoolLock)
-                    collection.Release2Pool();
+            var collectionPool = _collectionPool;
+            CollectionPool<List<T>>.Release(collection, ref collectionPool);
+            collection.Clear();
+            collection = null;
+        }
+
+        public Stack<T> StackAlloc<T>() => CollectionPool<Stack<T>>.Alloc(_collectionPool);
+        public void Release<T>(Stack<T> collection)
+        {
+            var collectionPool = _collectionPool;
+            CollectionPool<Stack<T>>.Release(collection, ref collectionPool);
+            collection.Clear();
+        }
+
+        public void Alloc<T>(ref HashSet<T> collection) => collection = CollectionPool<HashSet<T>>.Alloc(_collectionPool);
+        public void Release<T>(ref HashSet<T> collection)
+        {
+            var collectionPool = _collectionPool;
+            CollectionPool<HashSet<T>>.Release(collection, ref collectionPool);
+            collection.Clear();
+            collection = null;
+        }
+
+        public Dictionary<TKey, TValue> MapAlloc<TKey, TValue>(bool subThread)
+        {
+            if (subThread)
+                lock (_collectionPool)
+                    return CollectionPool<Dictionary<TKey, TValue>>.Alloc(_collectionPool);
+            return CollectionPool<Dictionary<TKey, TValue>>.Alloc(_collectionPool);
+        }
+        public void Alloc<TKey, TValue>(ref Dictionary<TKey, TValue> collection) => collection = CollectionPool<Dictionary<TKey, TValue>>.Alloc(_collectionPool);
+        public void Release<TKey, TValue>(Dictionary<TKey, TValue> collection, bool subThread)
+        {
+            var collectionPool = _collectionPool;
+            if (subThread)
+                lock (_collectionPool)
+                    CollectionPool<Dictionary<TKey, TValue>>.Release(collection, ref collectionPool);
             else
-                collection.Release2Pool();
+                CollectionPool<Dictionary<TKey, TValue>>.Release(collection, ref collectionPool);
+            collection.Clear();
         }
-        public void Release<TKey, TValue>(ref Dictionary<TKey, TValue> collection) => DictionaryPool.Release(ref collection);
+        public void Release<TKey, TValue>(ref Dictionary<TKey, TValue> collection)
+        {
+            var collectionPool = _collectionPool;
+            CollectionPool<Dictionary<TKey, TValue>>.Release(collection, ref collectionPool);
+            collection.Clear();
+            collection = null;
+        }
     }
 
     private sealed class SamplePathFindDrawProxy : IPathFindDrawProxy
@@ -127,11 +156,11 @@ internal sealed class PathFindSample : MonoBehaviour
             Position = other.Position;
             Long = path;
         }
-        internal Runtime(in Runtime other, in Vector2D lastPosition, in Vector2D position)
+        internal Runtime(in Runtime other, in Vector2D position)
         {
             MoveType = other.MoveType;
             CollType = other.CollType;
-            _lastPosition = lastPosition;
+            _lastPosition = other.Position;
             Position = position;
             Long = other.Long;
         }
@@ -210,7 +239,8 @@ internal sealed class PathFindSample : MonoBehaviour
     [SerializeField] private Vector2 _minBoundary;
     [SerializeField] private float _gridSize;
 
-    [Header("运行时数据")] [SerializeField] private int _seed;
+    [Header("运行时数据")] [SerializeField] private bool _run;
+    [SerializeField] private int _seed;
     [SerializeField] private int _countLimit;
     [SerializeField] private Vector2 _speedRange;
     [SerializeField] private Fixed64 _arrive;
@@ -284,6 +314,9 @@ internal sealed class PathFindSample : MonoBehaviour
     }
     private void Update()
     {
+        if (!_run)
+            return;
+
         var weight = Weight<Operate>.Get(_operateWeights, _random);
         switch (weight.Key)
         {
@@ -324,6 +357,9 @@ internal sealed class PathFindSample : MonoBehaviour
     {
         foreach (int index in _indexes)
         {
+            const PathFindFunc func = PathFindFunc.JPSPlus;
+            PathFindDiagnosis.RemoveNextPoint(func, index);
+
             var runtime = _runtime[index];
             var longPath = runtime.Long;
             var nextPosition = longPath.NextPosition();
@@ -336,9 +372,15 @@ internal sealed class PathFindSample : MonoBehaviour
             if (!ChangePosition(index, in runtime, offset))
                 continue;
 
-            var newDelta = nextPosition.Value - runtime.Position;
+            var newRuntime = _runtime[index]; // “ChangePosition”会修改“_runtime”
+            var newDelta = nextPosition.Value - newRuntime.Position;
             if (newDelta.SqrMagnitude() <= _arrive)
-                _runtime[index] = new Runtime(in runtime, longPath.Next());
+                _runtime[index] = new Runtime(in newRuntime, longPath.Next());
+
+            if (_runtime[index].Long.NextPosition() is { } nextPoint) // “PathHandle.Next()”会修改“_runtime”
+                PathFindDiagnosis.SetNextPoint(func, index, Position2Point(in nextPoint));
+            else
+                PathFindDiagnosis.RemoveNextPoint(func, index);
         }
     }
     private void RemoveElement()
@@ -358,14 +400,18 @@ internal sealed class PathFindSample : MonoBehaviour
     }
     private void FindElement()
     {
+        if (_indexes.IsEmpty())
+            return;
+
         int idx = _random.Next(0, _indexes.Count);
         int index = _indexes[idx];
         var runtime = _runtime[index];
 
         var moveType = runtime.MoveType;
         var collType = runtime.CollType;
-        var endPoint = RandomPoint(index, moveType, collType);
-        var sePoint = new PathFindPoint(Position2Point(in runtime.Position), endPoint);
+        var startPoint = Position2Point(in runtime.Position);
+        var endPoint = RandomEndPoint(index, startPoint, moveType, collType);
+        var sePoint = new PathFindPoint(startPoint, endPoint);
         var range = new PathFindPeek(_component.GetSize());
 
         var input = new PathFindInput(index, PathFindExt.EmptyIndex, true, (MoveFunc)moveType, (CollSize)collType, range, sePoint);
@@ -375,10 +421,19 @@ internal sealed class PathFindSample : MonoBehaviour
 
         var longPath = runtime.Long.Start();
         foreach (var point in _points)
-            longPath.Path.Add(Position2Point(point));
+            longPath.Path.Add(Point2Position(point));
         _runtime[index] = new Runtime(in runtime, longPath);
     }
 
+    private Vector2DInt16 RandomEndPoint(int index, Vector2DInt16 start, MoveType moveType, CollType collType)
+    {
+        while (true)
+        {
+            var end = RandomPoint(index, moveType, collType);
+            if (_component.CheckAreaIsSame(start, end, (MoveFunc)moveType, (CollSize)collType))
+                return end;
+        }
+    }
     private Vector2DInt16 RandomPoint(int index, MoveType moveType, CollType collType)
     {
         var size = _component.GetSize();
@@ -409,20 +464,18 @@ internal sealed class PathFindSample : MonoBehaviour
 
         _component.ResetMoveable(index, moveFunc, oldCollRange);
         _component.SetMoveable(index, moveFunc, newCollRange);
-        _runtime[index] = new Runtime(in runtime, in oldPosition, in newPosition);
+        _runtime[index] = new Runtime(in runtime, in newPosition);
         return true;
     }
 
-    public Vector2DInt16 Position2Point(in Vector2D position) => Position2Point(position.X, position.Y);
-    public Vector2DInt16 Position2Point(Fixed64 x, Fixed64 y) => new()
+    public Vector2DInt16 Position2Point(in Vector2D position) => new()
     {
-        X = (short)((x - _minBoundary.x) / _gridSize).Floor(),
-        Y = (short)((y - _minBoundary.y) / _gridSize).Floor(),
+        X = (short)((position.X - _minBoundary.x) / _gridSize).Floor(),
+        Y = (short)((position.Y - _minBoundary.y) / _gridSize).Floor(),
     };
-    public Vector2D Point2Position(Vector2DInt16 point) => Point2Position(point.X, point.Y);
-    public Vector2D Point2Position(int x, int y) => new()
+    public Vector2D Point2Position(Vector2DInt16 point) => new()
     {
-        X = x * _gridSize + _minBoundary.x + _gridSize * 0.5F,
-        Y = y * _gridSize + _minBoundary.y + _gridSize * 0.5F,
+        X = point.X * _gridSize + _minBoundary.x + _gridSize * 0.5F,
+        Y = point.Y * _gridSize + _minBoundary.y + _gridSize * 0.5F,
     };
 }

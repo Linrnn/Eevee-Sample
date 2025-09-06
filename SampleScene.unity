@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd056c1d09610e1429141866d0fa65d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindPortal
-  _drawIndex: 0
+  _drawIndex: 1
   _drawPoint: 0
   _drawLine: 0
   _startColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -248,7 +248,7 @@ MonoBehaviour:
   _indexes: 
   _drawIndex: 1
   _drawPoint: 0
-  _drawDir: 0
+  _drawDir: 1
   _color: {r: 0, g: 0, b: 1, a: 1}
   _dirColor: {r: 0, g: 0, b: 0.8, a: 1}
 --- !u!114 &76929665
@@ -308,7 +308,7 @@ MonoBehaviour:
   _findFunc: 1
   _indexes: 
   _drawPoint: 0
-  _drawNext: 0
+  _drawNext: 1
   _startColor: {r: 0, g: 1, b: 1, a: 1}
   _lineColor: {r: 0, g: 0.5, b: 0.5, a: 1}
   _endColor: {r: 0, g: 0.8, b: 0.8, a: 1}
@@ -343,7 +343,7 @@ MonoBehaviour:
   _nextPoint: 1
   _path: 1
   _process: 0
-  _log: 1
+  _log: 0
   _indexes: 
   _height: 0
 --- !u!114 &76929670
@@ -376,21 +376,22 @@ MonoBehaviour:
     Value: 25
   _operateWeights:
   - Key: 0
-    Value: 60
+    Value: 75
   - Key: 1
-    Value: 25
-  - Key: 2
     Value: 15
+  - Key: 2
+    Value: 5
   - Key: 3
     Value: 5
-  _map: {fileID: 4900000, guid: 9aef6d4ea1ba5324682d82ee25db63f9, type: 3}
+  _map: {fileID: 4900000, guid: 9c6fd6f559937d1449fb9aeac96caf2d, type: 3}
   _minBoundary: {x: 18.47, y: -6.59}
   _gridSize: 4
-  _seed: 20
+  _run: 0
+  _seed: 30
   _countLimit: 100
-  _speedRange: {x: 100, y: 200}
+  _speedRange: {x: 2, y: 8}
   _arrive:
-    RawValue: 6442450944
+    RawValue: 42949672960
   _indexAllocator: 0
   _indexCount: 0
 --- !u!1 &213234592
