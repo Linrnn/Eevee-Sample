@@ -106,6 +106,7 @@ internal sealed class PathFindSample : MonoBehaviour
         public PathFindComponent Component => _sample._component;
         public Vector2 MinBoundary => _sample._minBoundary;
         public float GridSize => _sample._gridSize;
+        public float GridOffset => _sample._gridOffset;
         public bool ValidColl(CollSize value) => value is >= (CollSize)CollType._1x1 and <= (CollSize)CollType._4x4;
         public Vector2Int? GetCurrentPoint(int index) => _sample._runtime.TryGetValue(index, out var runtime) ? _sample.Position2Point(in runtime.Position) : null;
         public Vector2? GetMoveDirection(int index) => _sample._runtime.TryGetValue(index, out var runtime) ? (Vector2)runtime.Direction() : null;
@@ -191,6 +192,7 @@ internal sealed class PathFindSample : MonoBehaviour
         internal Vector2D? NextPosition() => _index >= 0 && _index < Path.Count ? Path[_index] : null;
     }
 
+    [Flags]
     private enum GroundType : Ground
     {
         None = 0,
@@ -238,8 +240,9 @@ internal sealed class PathFindSample : MonoBehaviour
     [Header("地图配置")] [SerializeField] private TextAsset _map;
     [SerializeField] private Vector2 _minBoundary;
     [SerializeField] private float _gridSize;
+    [SerializeField] private float _gridOffset;
 
-    [Header("运行时数据")] [SerializeField] private bool _run;
+    [Header("运行时数据")] [SerializeField] private bool _run = true;
     [SerializeField] private int _seed;
     [SerializeField] private int _countLimit;
     [SerializeField] private Vector2 _speedRange;

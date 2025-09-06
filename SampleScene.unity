@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 76929660}
   - component: {fileID: 76929667}
   - component: {fileID: 76929666}
-  - component: {fileID: 76929668}
+  - component: {fileID: 76929671}
   m_Layer: 0
   m_Name: "\u5BFB\u8DEF\u793A\u4F8B"
   m_TagString: Untagged
@@ -313,21 +313,6 @@ MonoBehaviour:
   _lineColor: {r: 0, g: 0.5, b: 0.5, a: 1}
   _endColor: {r: 0, g: 0.8, b: 0.8, a: 1}
   _nextColor: {r: 0, g: 0.8, b: 0.8, a: 1}
---- !u!114 &76929668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 76929652}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ae58591f94905e41ad5164d7c1fa6ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindPoint
-  _points: []
-  _drawPoint: 1
-  _color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!114 &76929669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -384,9 +369,10 @@ MonoBehaviour:
   - Key: 3
     Value: 5
   _map: {fileID: 4900000, guid: 9c6fd6f559937d1449fb9aeac96caf2d, type: 3}
-  _minBoundary: {x: 18.47, y: -6.59}
+  _minBoundary: {x: 20, y: -10}
   _gridSize: 4
-  _run: 0
+  _gridOffset: 0.5
+  _run: 1
   _seed: 30
   _countLimit: 100
   _speedRange: {x: 2, y: 8}
@@ -394,6 +380,21 @@ MonoBehaviour:
     RawValue: 42949672960
   _indexAllocator: 0
   _indexCount: 0
+--- !u!114 &76929671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 76929652}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ae58591f94905e41ad5164d7c1fa6ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindPoint
+  _points: []
+  _drawPoint: 1
+  _color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1 &213234592
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,7 +876,6 @@ MonoBehaviour:
   _lineBall:
     Show: 1
     Color: {r: 1, g: 0, b: 1, a: 1}
-  _height: 0
   _drawIndex: 1
   _depthCounts: []
 --- !u!114 &898140562
