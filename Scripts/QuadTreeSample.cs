@@ -92,8 +92,8 @@ internal sealed class QuadTreeSample : MonoBehaviour
         [Func.GuardArea] = QuadTreeConfig.Build<LooseQuadTree>((int)Func.GuardArea, QuadTreeShape.Circle, new Vector2DInt(1024, 1024)),
         [Func.Region] = QuadTreeConfig.Build<LooseQuadTree>((int)Func.Region, QuadTreeShape.AABB, new Vector2DInt(256, 256)),
     };
-    private Dictionary<int, Runtime> _runtime;
     private SRandom _random;
+    private Dictionary<int, Runtime> _runtime;
     private List<int> _indexes;
     #endregion
 
@@ -102,8 +102,8 @@ internal sealed class QuadTreeSample : MonoBehaviour
         _indexAllocator = 0;
         _sample = this;
         _manager = new QuadTreeManager(_scale, _depthCount, new AABB2DInt(_center, _extents), _configs.Values.ToArray());
-        _runtime = new Dictionary<int, Runtime>();
         _random = new SRandom(_seed);
+        _runtime = new Dictionary<int, Runtime>();
         _indexes = new List<int>();
     }
     private void Update()

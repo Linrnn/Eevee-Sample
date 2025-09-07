@@ -108,8 +108,8 @@ internal sealed class PathFindSample : MonoBehaviour
         public float GridSize => _sample._gridSize;
         public float GridOffset => _sample._gridOffset;
         public bool ValidColl(CollSize value) => value is >= (CollSize)CollType._1x1 and <= (CollSize)CollType._4x4;
-        public Vector2Int? GetCurrentPoint(int index) => _sample._runtime.TryGetValue(index, out var runtime) ? _sample.Position2Point(in runtime.Position) : null;
-        public Vector2? GetMoveDirection(int index) => _sample._runtime.TryGetValue(index, out var runtime) ? (Vector2)runtime.Direction() : null;
+        public Vector2Int? GetCurrentPoint(int index) => _sample._moveables.TryGetValue(index, out var runtime) ? _sample.Position2Point(in runtime.Position) : null;
+        public Vector2? GetMoveDirection(int index) => _sample._moveables.TryGetValue(index, out var runtime) ? (Vector2)runtime.Direction() : null;
     }
 
     private sealed class SamplePathFindCollisionGetter : IPathFindCollisionGetter
@@ -226,9 +226,13 @@ internal sealed class PathFindSample : MonoBehaviour
     private enum Operate
     {
         None,
-        Insert,
-        Remove,
-        Find,
+        MoveableInsert,
+        MoveableRemove,
+        MoveableFind,
+        ObstacleInsert,
+        ObstacleRemove,
+        PortalInsert,
+        PortalRemove,
     }
     #endregion
 
@@ -236,6 +240,7 @@ internal sealed class PathFindSample : MonoBehaviour
     [Header("随机权重")] [SerializeField] private Weight<MoveType>[] _moveTypeWeights;
     [SerializeField] private Weight<CollType>[] _collTypeWeights;
     [SerializeField] private Weight<Operate>[] _operateWeights;
+    [SerializeField] private Weight<GroundType>[] _obstacleWeights;
 
     [Header("地图配置")] [SerializeField] private TextAsset _map;
     [SerializeField] private Vector2 _minBoundary;
@@ -244,8 +249,11 @@ internal sealed class PathFindSample : MonoBehaviour
 
     [Header("运行时数据")] [SerializeField] private bool _run = true;
     [SerializeField] private int _seed;
-    [SerializeField] private int _countLimit;
+    [SerializeField] private uint _moveableLimit;
+    [SerializeField] private uint _obstacleLimit;
+    [SerializeField] private uint _portalLimit;
     [SerializeField] private Vector2 _speedRange;
+    [SerializeField] private Vector2Int _obstacleRange;
     [SerializeField] private Fixed64 _arrive;
     [ReadOnly] [SerializeField] private int _indexAllocator;
     [ReadOnly] [SerializeField] private int _indexCount;
@@ -255,11 +263,15 @@ internal sealed class PathFindSample : MonoBehaviour
     private static PathFindSample _sample;
     private PathFindComponent _component;
     private readonly SamplePathFindCollisionGetter _collisionGetter = new();
-    private readonly List<Vector2DInt16> _points = new();
+    private readonly List<Vector2DInt16> _pathPoints = new();
+    private readonly List<int> _pathPortalIndexes = new();
 
-    private Dictionary<int, Runtime> _runtime;
     private SRandom _random;
-    private List<int> _indexes;
+    private Dictionary<int, Runtime> _moveables;
+    private Dictionary<int, Dictionary<Vector2DInt16, Ground>> _obstacles;
+    private List<int> _moveableIndexes;
+    private List<int> _obstacleIndexes;
+    private List<int> _portalIndexes;
     #endregion
 
     private void OnEnable()
@@ -311,9 +323,12 @@ internal sealed class PathFindSample : MonoBehaviour
         _indexAllocator = 0;
         _sample = this;
         _component = component;
-        _runtime = new Dictionary<int, Runtime>();
         _random = new SRandom(_seed);
-        _indexes = new List<int>();
+        _moveables = new Dictionary<int, Runtime>();
+        _obstacles = new Dictionary<int, Dictionary<Vector2DInt16, Ground>>();
+        _moveableIndexes = new List<int>();
+        _obstacleIndexes = new List<int>();
+        _portalIndexes = new List<int>();
     }
     private void Update()
     {
@@ -323,13 +338,17 @@ internal sealed class PathFindSample : MonoBehaviour
         var weight = Weight<Operate>.Get(_operateWeights, _random);
         switch (weight.Key)
         {
-            case Operate.Insert: InsertElement(); break;
-            case Operate.Remove: RemoveElement(); break;
-            case Operate.Find: FindElement(); break;
+            case Operate.MoveableInsert: MoveableInsert(); break;
+            case Operate.MoveableRemove: MoveableRemove(); break;
+            case Operate.MoveableFind: MoveableFind(); break;
+            case Operate.ObstacleInsert: ObstacleInsert(); break;
+            case Operate.ObstacleRemove: ObstacleRemove(); break;
+            case Operate.PortalInsert: PortalInsert(); break;
+            case Operate.PortalRemove: PortalRemove(); break;
         }
 
-        MoveElement();
-        _indexCount = _indexes.Count;
+        MoveableMove();
+        _indexCount = _moveableIndexes.Count + _obstacleIndexes.Count + _portalIndexes.Count;
     }
     private void OnDisable()
     {
@@ -337,9 +356,9 @@ internal sealed class PathFindSample : MonoBehaviour
         _component = null;
     }
 
-    private void InsertElement()
+    private void MoveableInsert()
     {
-        if (_indexes.Count >= _countLimit)
+        if (_moveableIndexes.Count >= _moveableLimit)
             return;
 
         var moveTypeWeight = Weight<MoveType>.Get(_moveTypeWeights, _random);
@@ -352,18 +371,60 @@ internal sealed class PathFindSample : MonoBehaviour
 
         int index = ++_indexAllocator;
         _component.SetMoveable(index, (MoveFunc)moveType, collRange);
-        _runtime.Add(index, new Runtime(moveType, collType, Point2Position(point)));
-        _indexes.Add(index);
-        _indexes.Sort(Comparable<int>.Default);
+        _moveables.Add(index, new Runtime(moveType, collType, Point2Position(point)));
+        _moveableIndexes.Add(index);
+        _moveableIndexes.Sort(Comparable<int>.Default);
     }
-    private void MoveElement()
+    private void MoveableRemove()
     {
-        foreach (int index in _indexes)
+        if (_moveableIndexes.IsEmpty())
+            return;
+
+        int idx = _random.Next(0, _moveableIndexes.Count);
+        int index = _moveableIndexes[idx];
+        var runtime = _moveables[index];
+        var point = Position2Point(in runtime.Position);
+        var collRange = _collisionGetter.Get(point.X, point.Y, (CollSize)runtime.CollType);
+
+        _component.ResetMoveable(index, (MoveFunc)runtime.MoveType, collRange);
+        _moveables.Remove(index);
+        _moveableIndexes.RemoveAt(idx);
+    }
+    private void MoveableFind()
+    {
+        if (_moveableIndexes.IsEmpty())
+            return;
+
+        int idx = _random.Next(0, _moveableIndexes.Count);
+        int index = _moveableIndexes[idx];
+        var runtime = _moveables[index];
+
+        var moveType = runtime.MoveType;
+        var collType = runtime.CollType;
+        var startPoint = Position2Point(in runtime.Position);
+        var endPoint = RandomEndPoint(index, startPoint, moveType, collType);
+        var sePoint = new PathFindPoint(startPoint, endPoint);
+        var range = new PathFindPeek(_component.GetSize());
+
+        var input = new PathFindInput(index, PathFindExt.EmptyIndex, true, (MoveFunc)moveType, (CollSize)collType, range, sePoint);
+        var output = new PathFindOutput(_pathPoints, _pathPortalIndexes);
+        _pathPoints.Clear();
+        _pathPortalIndexes.Clear();
+        _component.GetLongPath(input, ref output);
+
+        var longPath = runtime.Long.Start();
+        foreach (var point in _pathPoints)
+            longPath.Path.Add(Point2Position(point));
+        _moveables[index] = new Runtime(in runtime, longPath);
+    }
+    private void MoveableMove()
+    {
+        foreach (int index in _moveableIndexes)
         {
             const PathFindFunc func = PathFindFunc.JPSPlus;
             PathFindDiagnosis.RemoveNextPoint(func, index);
 
-            var runtime = _runtime[index];
+            var runtime = _moveables[index];
             var longPath = runtime.Long;
             var nextPosition = longPath.NextPosition();
             if (nextPosition == null)
@@ -375,57 +436,78 @@ internal sealed class PathFindSample : MonoBehaviour
             if (!ChangePosition(index, in runtime, offset))
                 continue;
 
-            var newRuntime = _runtime[index]; // “ChangePosition”会修改“_runtime”
+            var newRuntime = _moveables[index]; // “ChangePosition”会修改“_runtime”
             var newDelta = nextPosition.Value - newRuntime.Position;
             if (newDelta.SqrMagnitude() <= _arrive)
-                _runtime[index] = new Runtime(in newRuntime, longPath.Next());
+                _moveables[index] = new Runtime(in newRuntime, longPath.Next());
 
-            if (_runtime[index].Long.NextPosition() is { } nextPoint) // “PathHandle.Next()”会修改“_runtime”
+            if (_moveables[index].Long.NextPosition() is { } nextPoint) // “PathHandle.Next()”会修改“_runtime”
                 PathFindDiagnosis.SetNextPoint(func, index, Position2Point(in nextPoint));
             else
                 PathFindDiagnosis.RemoveNextPoint(func, index);
         }
     }
-    private void RemoveElement()
+
+    private void ObstacleInsert()
     {
-        if (_indexes.IsEmpty())
+        if (_obstacleIndexes.Count >= _obstacleLimit)
             return;
 
-        int idx = _random.Next(0, _indexes.Count);
-        int index = _indexes[idx];
-        var runtime = _runtime[index];
-        var point = Position2Point(in runtime.Position);
-        var collRange = _collisionGetter.Get(point.X, point.Y, (CollSize)runtime.CollType);
+        var obstacleWeight = Weight<GroundType>.Get(_obstacleWeights, _random);
+        int width = _random.Next(_obstacleRange.x, _obstacleRange.y + 1);
+        int height = _random.Next(_obstacleRange.x, _obstacleRange.y + 1);
+        var obstacle = new Dictionary<Vector2DInt16, Ground>(width * height);
+        var range = RandomPoint(width, height);
+        for (int i = range.Min.X; i <= range.Max.X; ++i)
+        for (int j = range.Min.Y; j < range.Max.Y; ++j)
+            obstacle.Add(new Vector2DInt16(i, j), (Ground)obstacleWeight.Key);
 
-        _component.ResetMoveable(index, (MoveFunc)runtime.MoveType, collRange);
-        _runtime.Remove(index);
-        _indexes.RemoveAt(idx);
+        int index = ++_indexAllocator;
+        _component.SetObstacle(index, obstacle);
+        _obstacles.Add(index, obstacle);
+        _obstacleIndexes.Add(index);
+        _obstacleIndexes.Sort(Comparable<int>.Default);
     }
-    private void FindElement()
+    private void ObstacleRemove()
     {
-        if (_indexes.IsEmpty())
+        if (_obstacleIndexes.IsEmpty())
             return;
 
-        int idx = _random.Next(0, _indexes.Count);
-        int index = _indexes[idx];
-        var runtime = _runtime[index];
+        int idx = _random.Next(0, _obstacleIndexes.Count);
+        int index = _obstacleIndexes[idx];
+        var runtime = _obstacles[index];
 
-        var moveType = runtime.MoveType;
-        var collType = runtime.CollType;
-        var startPoint = Position2Point(in runtime.Position);
-        var endPoint = RandomEndPoint(index, startPoint, moveType, collType);
-        var sePoint = new PathFindPoint(startPoint, endPoint);
-        var range = new PathFindPeek(_component.GetSize());
+        _component.ResetObstacle(index, runtime);
+        _obstacles.Remove(index);
+        _obstacleIndexes.RemoveAt(idx);
+    }
 
-        var input = new PathFindInput(index, PathFindExt.EmptyIndex, true, (MoveFunc)moveType, (CollSize)collType, range, sePoint);
-        var output = new PathFindOutput(_points);
-        _points.Clear();
-        _component.GetLongPath(input, ref output);
+    private void PortalInsert()
+    {
+        if (_portalIndexes.Count >= _portalLimit)
+            return;
 
-        var longPath = runtime.Long.Start();
-        foreach (var point in _points)
-            longPath.Path.Add(Point2Position(point));
-        _runtime[index] = new Runtime(in runtime, longPath);
+        var size = _component.GetSize();
+        int sx = _random.Next(size.X);
+        int sy = _random.Next(size.Y);
+        int ex = _random.Next(size.X);
+        int ey = _random.Next(size.Y);
+
+        int index = ++_indexAllocator;
+        _component.AddPortal(index, new PathFindPoint(sx, sy, ex, ey));
+        _portalIndexes.Add(index);
+        _portalIndexes.Sort(Comparable<int>.Default);
+    }
+    private void PortalRemove()
+    {
+        if (_portalIndexes.IsEmpty())
+            return;
+
+        int idx = _random.Next(0, _portalIndexes.Count);
+        int index = _portalIndexes[idx];
+
+        _component.RemovePortal(index);
+        _portalIndexes.RemoveAt(idx);
     }
 
     private Vector2DInt16 RandomEndPoint(int index, Vector2DInt16 start, MoveType moveType, CollType collType)
@@ -450,6 +532,17 @@ internal sealed class PathFindSample : MonoBehaviour
                 return point;
         }
     }
+    private PathFindPeek RandomPoint(int width, int height)
+    {
+        for (var size = _component.GetSize();;)
+        {
+            int px = _random.Next(size.X - width);
+            int py = _random.Next(size.Y - height);
+            var range = new PathFindPeek(px, py, px + width, py + height);
+            if (_component.CanStand(range))
+                return range;
+        }
+    }
     private bool ChangePosition(int index, in Runtime runtime, in Vector2D offset)
     {
         MoveFunc moveFunc = (MoveFunc)runtime.MoveType;
@@ -467,7 +560,7 @@ internal sealed class PathFindSample : MonoBehaviour
 
         _component.ResetMoveable(index, moveFunc, oldCollRange);
         _component.SetMoveable(index, moveFunc, newCollRange);
-        _runtime[index] = new Runtime(in runtime, in newPosition);
+        _moveables[index] = new Runtime(in runtime, in newPosition);
         return true;
     }
 

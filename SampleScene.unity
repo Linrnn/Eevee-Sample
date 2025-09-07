@@ -361,21 +361,37 @@ MonoBehaviour:
     Value: 25
   _operateWeights:
   - Key: 0
-    Value: 75
+    Value: 650
   - Key: 1
-    Value: 15
+    Value: 150
   - Key: 2
-    Value: 5
+    Value: 20
   - Key: 3
-    Value: 5
+    Value: 80
+  - Key: 4
+    Value: 40
+  - Key: 5
+    Value: 10
+  - Key: 6
+    Value: 40
+  - Key: 7
+    Value: 10
+  _obstacleWeights:
+  - Key: 2
+    Value: 80
+  - Key: 4
+    Value: 20
   _map: {fileID: 4900000, guid: 9c6fd6f559937d1449fb9aeac96caf2d, type: 3}
   _minBoundary: {x: 20, y: -10}
   _gridSize: 4
   _gridOffset: 0.5
   _run: 1
   _seed: 30
-  _countLimit: 100
+  _moveableLimit: 100
+  _obstacleLimit: 100
+  _portalLimit: 10
   _speedRange: {x: 2, y: 8}
+  _obstacleRange: {x: 1, y: 6}
   _arrive:
     RawValue: 42949672960
   _indexAllocator: 0
