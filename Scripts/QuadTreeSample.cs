@@ -19,7 +19,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
     private sealed class SampleQuadTreeDrawProxy : IQuadTreeDrawProxy
     {
         public Type TreeEnum => typeof(Func);
-        public QuadTreeManager Manager => _sample._manager;
+        public QuadTreeManager Manager => _instance._manager;
     }
 
     private readonly struct Runtime
@@ -80,7 +80,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
     #endregion
 
     #region 运行时缓存
-    private static QuadTreeSample _sample;
+    private static QuadTreeSample _instance;
     private QuadTreeManager _manager;
 
     private readonly Dictionary<Func, QuadTreeConfig> _configs = new()
@@ -100,7 +100,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
     private void OnEnable()
     {
         _indexAllocator = 0;
-        _sample = this;
+        _instance = this;
         _manager = new QuadTreeManager(_scale, _depthCount, new AABB2DInt(_center, _extents), _configs.Values.ToArray());
         _random = new SRandom(_seed);
         _runtime = new Dictionary<int, Runtime>();
@@ -122,7 +122,7 @@ internal sealed class QuadTreeSample : MonoBehaviour
     }
     private void OnDisable()
     {
-        _sample = null;
+        _instance = null;
         _manager.Clean();
         _manager = null;
     }

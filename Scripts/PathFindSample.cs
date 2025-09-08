@@ -103,13 +103,13 @@ internal sealed class PathFindSample : MonoBehaviour
         public Type GroupTypeEnum => typeof(GroundType);
         public Type MoveTypeEnum => typeof(MoveType);
         public Type CollTypeEnum => typeof(CollType);
-        public PathFindComponent Component => _sample._component;
-        public Vector2 MinBoundary => _sample._minBoundary;
-        public float GridSize => _sample._gridSize;
-        public float GridOffset => _sample._gridOffset;
+        public PathFindComponent Component => _instance._component;
+        public Vector2 MinBoundary => _instance._minBoundary;
+        public float GridSize => _instance._gridSize;
+        public float GridOffset => _instance._gridOffset;
         public bool ValidColl(CollSize value) => value is >= (CollSize)CollType._1x1 and <= (CollSize)CollType._4x4;
-        public Vector2Int? GetCurrentPoint(int index) => _sample._moveables.TryGetValue(index, out var runtime) ? _sample.Position2Point(in runtime.Position) : null;
-        public Vector2? GetMoveDirection(int index) => _sample._moveables.TryGetValue(index, out var runtime) ? (Vector2)runtime.Direction() : null;
+        public Vector2Int? GetCurrentPoint(int index) => _instance._moveables.TryGetValue(index, out var runtime) ? _instance.Position2Point(in runtime.Position) : null;
+        public Vector2? GetMoveDirection(int index) => _instance._moveables.TryGetValue(index, out var runtime) ? (Vector2)runtime.Direction() : null;
     }
 
     private sealed class SamplePathFindCollisionGetter : IPathFindCollisionGetter
@@ -260,7 +260,7 @@ internal sealed class PathFindSample : MonoBehaviour
     #endregion
 
     #region 运行时缓存
-    private static PathFindSample _sample;
+    private static PathFindSample _instance;
     private PathFindComponent _component;
     private readonly SamplePathFindCollisionGetter _collisionGetter = new();
     private readonly List<Vector2DInt16> _pathPoints = new();
@@ -312,7 +312,7 @@ internal sealed class PathFindSample : MonoBehaviour
             {
                 var span = line.AsSpan(j * offset, offset);
                 byte.TryParse(span, NumberStyles.AllowHexSpecifier, null, out Ground ground);
-                nodes[i, j] = ground;
+                nodes[i, j] = (Ground)(~ground);
             }
         }
         #endregion
@@ -321,7 +321,7 @@ internal sealed class PathFindSample : MonoBehaviour
         component.Initialize(true, true, true, true);
 
         _indexAllocator = 0;
-        _sample = this;
+        _instance = this;
         _component = component;
         _random = new SRandom(_seed);
         _moveables = new Dictionary<int, Runtime>();
@@ -352,7 +352,7 @@ internal sealed class PathFindSample : MonoBehaviour
     }
     private void OnDisable()
     {
-        _sample = null;
+        _instance = null;
         _component = null;
     }
 
