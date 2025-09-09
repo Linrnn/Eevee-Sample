@@ -159,7 +159,7 @@ internal sealed class CollectionSample : MonoBehaviour
 
         foreach (int item in _eveList)
             if (!_helpList.Remove(item))
-                throw new Exception($"_sysList:{_sysList.JoinString()} != _eveList:{_eveList.JoinString()}");
+                throw new Exception($"_sysList:{_sysList.JsonString()} != _eveList:{_eveList.JsonString()}");
 
         if (!_helpList.IsEmpty())
             throw new Exception($"_helpList.Count:{_helpList.Count} != 0");
@@ -271,7 +271,7 @@ internal sealed class CollectionSample : MonoBehaviour
         _ = _sysSet; // 平衡“_eveSet”的引用次数
         _ = _sysSet; // 平衡“_eveSet”的引用次数
         if (!_eveSet.CheckEquals())
-            throw new Exception($"CheckEquals fail, _eveSet:{_eveSet.JoinString()}");
+            throw new Exception($"CheckEquals fail, _eveSet:{_eveSet.JsonString()}");
 
         if (!_eveSet.SetEquals(_sysSet))
             ExceptionSet(nameof(ISet<object>.SetEquals));
@@ -294,7 +294,7 @@ internal sealed class CollectionSample : MonoBehaviour
     }
     private void ExceptionSet(string methodName)
     {
-        throw new Exception($"{methodName} fail, _sysSet:{_sysSet.JoinString()}, _eveSet:{_eveSet.JoinString()}");
+        throw new Exception($"{methodName} fail, _sysSet:{_sysSet.JsonString()}, _eveSet:{_eveSet.JsonString()}");
     }
     #endregion
 
@@ -384,7 +384,7 @@ internal sealed class CollectionSample : MonoBehaviour
     }
     private void ExceptionDic(string methodName)
     {
-        throw new Exception($"{methodName} fail, _sysDic:{_sysDic.JoinString()}, _eveDic:{_eveDic.AsPair().JoinString()}");
+        throw new Exception($"{methodName} fail, _sysDic:{_sysDic.JsonString()}, _eveDic:{_eveDic.AsPair().JsonString()}");
     }
     #endregion
 

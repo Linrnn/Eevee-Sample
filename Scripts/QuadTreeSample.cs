@@ -68,8 +68,8 @@ internal sealed class QuadTreeSample : MonoBehaviour
 
     [Header("四叉树配置")] [SerializeField] private int _scale;
     [SerializeField] private int _depthCount;
-    [SerializeField] private Vector2DInt _center;
-    [SerializeField] private Vector2DInt _extents;
+    [SerializeField] private Vector2Int _center;
+    [SerializeField] private Vector2Int _extents;
 
     [Header("运行时数据")] [SerializeField] private int _seed;
     [SerializeField] private int _countLimit;

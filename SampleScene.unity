@@ -193,7 +193,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Eevee::EeveeEditor.PathFind.EditorDrawPathFindArea
   _moveType: 130
   _collType: 2
-  _allocatorId: 0
+  _counts: []
+  _idAllocator: 0
+  _draw: 1
   _drawPoint: 0
   _color: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &76929662
@@ -832,12 +834,8 @@ MonoBehaviour:
     Value: 10
   _scale: 128
   _depthCount: 8
-  _center:
-    X: 1000
-    Y: -2000
-  _extents:
-    X: 9000
-    Y: 7000
+  _center: {x: 0, y: 0}
+  _extents: {x: 0, y: 0}
   _seed: 10
   _countLimit: 3000
   _speedRange: {x: 60, y: 120}
