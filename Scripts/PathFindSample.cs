@@ -112,6 +112,21 @@ internal sealed class PathFindSample : MonoBehaviour
         public Vector2? GetMoveDirection(int index) => _instance._moveables.TryGetValue(index, out var runtime) ? (Vector2)runtime.Direction() : null;
     }
 
+    private sealed class SamplePathFindTerrainGetter : IPathFindTerrainGetter
+    {
+        private readonly Ground[,] _nodes;
+        internal SamplePathFindTerrainGetter(Ground[,] nodes)
+        {
+            Width = nodes.GetLength(0);
+            Height = nodes.GetLength(1);
+            _nodes = nodes;
+        }
+
+        public int Width { get; }
+        public int Height { get; }
+        public byte Get(int x, int y) => _nodes[x, y];
+    }
+
     private sealed class SamplePathFindCollisionGetter : IPathFindCollisionGetter
     {
         public CollSize GetNull() => (CollSize)CollType._0x0;
@@ -303,7 +318,7 @@ internal sealed class PathFindSample : MonoBehaviour
             (CollSize)CollType._3x3,
             (CollSize)CollType._4x4,
         };
-        var getters = new PathFindGetters(_collisionGetter, new SamplePathPathFindObjectPoolGetter());
+        var getters = new PathFindGetters(new SamplePathFindTerrainGetter(nodes), _collisionGetter, new SamplePathPathFindObjectPoolGetter());
 
         for (int i = 0; i < mapWidth; ++i)
         {
@@ -317,7 +332,7 @@ internal sealed class PathFindSample : MonoBehaviour
         }
         #endregion
 
-        var component = new PathFindComponent(nodes, moveTypeGroups, collTypes, in getters);
+        var component = new PathFindComponent(moveTypeGroups, collTypes, in getters);
         component.Initialize(true, true, true, true);
 
         _indexAllocator = 0;
