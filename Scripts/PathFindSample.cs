@@ -25,76 +25,35 @@ internal sealed class PathFindSample : MonoBehaviour
     {
         private readonly CollectionPool _collectionPool = new();
 
-        public List<T> ListAlloc<T>() => CollectionPool<List<T>>.Alloc(_collectionPool);
-        public List<T> ListAlloc<T>(bool subThread)
+        public List<T> AllocList<T>(bool needLock)
         {
-            if (subThread)
+            if (needLock)
                 lock (_collectionPool)
                     return CollectionPool<List<T>>.Alloc(_collectionPool);
             return CollectionPool<List<T>>.Alloc(_collectionPool);
         }
-        public List<T> ListAlloc<T>(int capacity)
-        {
-            var collection = CollectionPool<List<T>>.Alloc(_collectionPool);
-            collection.Capacity = capacity;
-            return collection;
-        }
-        public void Alloc<T>(ref List<T> collection) => collection = CollectionPool<List<T>>.Alloc(_collectionPool);
-        public void Release<T>(List<T> collection)
-        {
-            var collectionPool = _collectionPool;
-            CollectionPool<List<T>>.Release(collection, ref collectionPool);
-            collection.Clear();
-        }
-        public void Release<T>(ref List<T> collection)
-        {
-            var collectionPool = _collectionPool;
-            CollectionPool<List<T>>.Release(collection, ref collectionPool);
-            collection.Clear();
-            collection = null;
-        }
+        public void ReleaseList<T>(List<T> collection) => CollectionPool<List<T>>.Release(collection, _collectionPool);
 
-        public Stack<T> StackAlloc<T>() => CollectionPool<Stack<T>>.Alloc(_collectionPool);
-        public void Release<T>(Stack<T> collection)
-        {
-            var collectionPool = _collectionPool;
-            CollectionPool<Stack<T>>.Release(collection, ref collectionPool);
-            collection.Clear();
-        }
+        public Stack<T> AllocStack<T>() => CollectionPool<Stack<T>>.Alloc(_collectionPool);
+        public void ReleaseStack<T>(Stack<T> collection) => CollectionPool<Stack<T>>.Release(collection, _collectionPool);
 
-        public void Alloc<T>(ref HashSet<T> collection) => collection = CollectionPool<HashSet<T>>.Alloc(_collectionPool);
-        public void Release<T>(ref HashSet<T> collection)
-        {
-            var collectionPool = _collectionPool;
-            CollectionPool<HashSet<T>>.Release(collection, ref collectionPool);
-            collection.Clear();
-            collection = null;
-        }
+        public HashSet<T> AllocSet<T>() => CollectionPool<HashSet<T>>.Alloc(_collectionPool);
+        public void ReleaseSet<T>(HashSet<T> collection) => CollectionPool<HashSet<T>>.Release(collection, _collectionPool);
 
-        public Dictionary<TKey, TValue> MapAlloc<TKey, TValue>(bool subThread)
+        public Dictionary<TKey, TValue> AllocMap<TKey, TValue>(bool needLock)
         {
-            if (subThread)
+            if (needLock)
                 lock (_collectionPool)
                     return CollectionPool<Dictionary<TKey, TValue>>.Alloc(_collectionPool);
             return CollectionPool<Dictionary<TKey, TValue>>.Alloc(_collectionPool);
         }
-        public void Alloc<TKey, TValue>(ref Dictionary<TKey, TValue> collection) => collection = CollectionPool<Dictionary<TKey, TValue>>.Alloc(_collectionPool);
-        public void Release<TKey, TValue>(Dictionary<TKey, TValue> collection, bool subThread)
+        public void ReleaseMap<TKey, TValue>(Dictionary<TKey, TValue> collection, bool needLock)
         {
-            var collectionPool = _collectionPool;
-            if (subThread)
+            if (needLock)
                 lock (_collectionPool)
-                    CollectionPool<Dictionary<TKey, TValue>>.Release(collection, ref collectionPool);
+                    CollectionPool<Dictionary<TKey, TValue>>.Release(collection, _collectionPool);
             else
-                CollectionPool<Dictionary<TKey, TValue>>.Release(collection, ref collectionPool);
-            collection.Clear();
-        }
-        public void Release<TKey, TValue>(ref Dictionary<TKey, TValue> collection)
-        {
-            var collectionPool = _collectionPool;
-            CollectionPool<Dictionary<TKey, TValue>>.Release(collection, ref collectionPool);
-            collection.Clear();
-            collection = null;
+                CollectionPool<Dictionary<TKey, TValue>>.Release(collection, _collectionPool);
         }
     }
 
@@ -130,7 +89,7 @@ internal sealed class PathFindSample : MonoBehaviour
     private sealed class SamplePathFindCollisionGetter : IPathFindCollisionGetter
     {
         public CollSize GetNull() => (CollSize)CollType._0x0;
-        public CollSize GetMax(IList<CollSize> collisions) => collisions.GetMax();
+        public CollSize GetMax(IReadOnlyList<CollSize> collisions) => collisions.GetMax();
         public PathFindPeek Get(CollSize coll) => coll switch
         {
             (CollSize)CollType._1x1 => default,
