@@ -31,6 +31,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
     [SerializeField] private bool _testLog2;
     [SerializeField] private bool _testLn;
     [SerializeField] private bool _testLg;
+    [SerializeField] private bool _testLog;
     #endregion
 
     #region 测试数据
@@ -79,6 +80,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
         Log2();
         Ln();
         Lg();
+        Log();
     }
 
     private void Initialize()
@@ -211,7 +213,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
         foreach (var left in _fixed64SmallNumbers)
         {
             var item = _fixed64SmallNumbers[_random.GetInt32(0, _fixed64SmallNumbers.Count)];
-            var right = item == 0 ? 0.01 : item;
+            var right = item.Abs().RawValue < Const.Epsilon ? item.Sign() * 0.01 : item;
             var fDiv = left / right;
             var sDiv = (Fixed64)((decimal)left / (decimal)right);
 
@@ -611,7 +613,7 @@ internal sealed class Fixed64Sample : MonoBehaviour
 
         foreach (var value in _fixed64One)
         {
-            var exp = value << 3;
+            var exp = (value << 3).Abs();
             var fPow = Maths.Pow(value.Abs(), exp);
             double sPow = Math.Pow((double)value.Abs(), (double)exp);
 
@@ -666,6 +668,23 @@ internal sealed class Fixed64Sample : MonoBehaviour
             double diff = Math.Abs(((double)fLg - sLg));
             if (diff >= Epsilon)
                 Debug.LogError($"[Sample] fLg:{fLg}, sLg:{sLg:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, a:{a}");
+        }
+    }
+    private void Log()
+    {
+        if (!_testLog)
+            return;
+
+        foreach (var value in _fixed64One)
+        {
+            var a = value + Maths.Pi;
+            var b = value + Maths.E;
+            var fLog = Maths.Log(a, b);
+            double sLog = Math.Log((double)a, (double)b);
+
+            double diff = Math.Abs(((double)fLog - sLog));
+            if (diff >= Epsilon)
+                Debug.LogError($"[Sample] fLog:{fLog}, sLog:{sLog:0.#######}, diff:{diff:0.#######} >= {Epsilon:0.#######}, a:{a}");
         }
     }
     #endregion

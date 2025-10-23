@@ -83,7 +83,8 @@ internal sealed class PathFindSample : MonoBehaviour
 
         public int Width { get; }
         public int Height { get; }
-        public byte Get(int x, int y) => _nodes[x, y];
+        public Ground Get(int x, int y) => _nodes[x, y];
+        public void Set(int x, int y, Ground groupType) => _nodes[x, y] = groupType;
     }
 
     private sealed class SamplePathFindCollisionGetter : IPathFindCollisionGetter
