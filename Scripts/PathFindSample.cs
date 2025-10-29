@@ -382,10 +382,11 @@ internal sealed class PathFindSample : MonoBehaviour
         var range = new PathFindPeek(_component.GetSize());
 
         var input = new PathFindInput(index, PathFindExt.EmptyIndex, true, (MoveFunc)moveType, (CollSize)collType, range, sePoint);
+        var extra = new PathFindLongInput(false);
         var output = new PathFindOutput(_pathPoints, _pathPortalIndexes);
         _pathPoints.Clear();
         _pathPortalIndexes.Clear();
-        _component.GetLongPath(input, ref output);
+        _component.GetLongPath(in input, in extra, ref output);
 
         var longPath = runtime.Long.Start();
         foreach (var point in _pathPoints)
