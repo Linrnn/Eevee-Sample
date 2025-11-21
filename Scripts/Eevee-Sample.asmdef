@@ -1,0 +1,16 @@
+{
+    "name": "Eevee-Sample",
+    "rootNamespace": "",
+    "references": [
+        "Eevee"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

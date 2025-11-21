@@ -491,7 +491,7 @@ internal sealed class PathFindSample : MonoBehaviour
         while (true)
         {
             var end = RandomPoint(index, moveType, collType);
-            if (_component.CheckAreaIsSame(start, end, (MoveFunc)moveType, (CollSize)collType))
+            if (_component.CheckArea(start, end, (MoveFunc)moveType, (CollSize)collType))
                 return end;
         }
     }
